@@ -57,21 +57,21 @@ jobs:
           role-session-name: github-${{ github.run_id }}-${{ inputs.environment }}-destroy
 
       - name: Terraform init
-        run: terraform -chdir=${{ inputs.chdir }} init -input=false
+        run: terraform -chdir="${{ inputs.chdir }}" init -input=false
 
       - name: Terraform destroy (with target)
         if: ${{ inputs.target != '' }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} destroy \
+          terraform -chdir="${{ inputs.chdir }}" destroy \
             -auto-approve \
             -input=false \
-            -target=${{ inputs.target }}
+            -target="${{ inputs.target }}"
 
       - name: Terraform destroy (full)
         if: ${{ inputs.target == '' }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} destroy \
+          terraform -chdir="${{ inputs.chdir }}" destroy \
             -auto-approve \
             -input=false

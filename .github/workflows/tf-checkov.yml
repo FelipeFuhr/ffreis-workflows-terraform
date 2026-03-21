@@ -3,6 +3,10 @@ name: Terraform Compliance Scan (Checkov)
 on:
   workflow_call:
     inputs:
+      checkov-version:
+        description: "Checkov version to install"
+        type: string
+        default: "3.2.0"
       scan-directory:
         description: "Directory to scan"
         type: string
@@ -33,7 +37,7 @@ jobs:
       - name: Install Checkov
         run: |
           set -euo pipefail
-          pip install checkov
+          pip install "checkov==${{ inputs.checkov-version }}"
 
       - name: Run Checkov (with soft-fail, with skip-check)
         if: ${{ inputs.soft-fail && inputs.skip-check != '' }}

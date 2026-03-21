@@ -48,8 +48,8 @@ lefthook-bootstrap: ## Download lefthook binary to .bin/
 	LEFTHOOK_VERSION="1.7.10" BIN_DIR=".bin" bash ./scripts/bootstrap_lefthook.sh
 
 .PHONY: lefthook-install
-lefthook-install: ## Install git hooks via lefthook
-	lefthook install
+lefthook-install: lefthook-bootstrap ## Install git hooks via lefthook
+	./.bin/lefthook install
 
 .PHONY: hooks
-hooks: lefthook-bootstrap lefthook-install ## Bootstrap and install all git hooks
+hooks: lefthook-install ## Bootstrap and install all git hooks

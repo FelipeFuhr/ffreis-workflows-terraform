@@ -41,7 +41,7 @@ jobs:
     uses: ./.github/workflows/tf-docs.yml
     with:
       working-directory: examples/hello
-      output-file: stack/README.md
+      output-file: README.md
 
   security:
     uses: ./.github/workflows/tf-security.yml

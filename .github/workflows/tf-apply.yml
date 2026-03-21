@@ -20,7 +20,7 @@ on:
         type: string
         default: "us-east-1"
       auto-approve:
-        description: "Pass -auto-approve to terraform apply"
+        description: "Pass -auto-approve to terraform apply (plan-file based apply is not supported; use auto-approve: true)"
         type: boolean
         default: true
     secrets:
@@ -53,16 +53,16 @@ jobs:
           role-session-name: github-${{ github.run_id }}-${{ inputs.environment }}-apply
 
       - name: Terraform init
-        run: terraform -chdir=${{ inputs.chdir }} init -input=false
+        run: terraform -chdir="${{ inputs.chdir }}" init -input=false
 
       - name: Terraform apply (auto-approve)
         if: ${{ inputs.auto-approve }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} apply -auto-approve -input=false
+          terraform -chdir="${{ inputs.chdir }}" apply -auto-approve -input=false
 
-      - name: Terraform apply (from plan file)
+      - name: Terraform apply (interactive)
         if: ${{ !inputs.auto-approve }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} apply -input=false tfplan
+          terraform -chdir="${{ inputs.chdir }}" apply -input=false

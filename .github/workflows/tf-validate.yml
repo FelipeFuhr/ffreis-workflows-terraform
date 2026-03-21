@@ -38,14 +38,14 @@ jobs:
         if: ${{ !inputs.validate-all-modules }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} init -backend=false -input=false
-          terraform -chdir=${{ inputs.chdir }} validate
+          terraform -chdir="${{ inputs.chdir }}" init -backend=false -input=false
+          terraform -chdir="${{ inputs.chdir }}" validate
 
       - name: Validate all modules
         if: ${{ inputs.validate-all-modules }}
         run: |
           set -euo pipefail
-          find ${{ inputs.modules-dir }} -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
+          find "${{ inputs.modules-dir }}" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
             echo "── Validating $dir ──"
             terraform -chdir="$dir" init -backend=false -input=false
             terraform -chdir="$dir" validate

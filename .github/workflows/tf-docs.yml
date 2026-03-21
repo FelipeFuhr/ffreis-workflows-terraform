@@ -34,8 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${{ inputs.terraform-docs-version }}"
-          # Strip leading 'v' for the archive filename
-          VER="${VERSION#v}"
+          # VERSION is expected to include the leading 'v' to match the release tag and archive filename
           ARCHIVE="terraform-docs-${VERSION}-linux-amd64.tar.gz"
           URL="https://github.com/terraform-docs/terraform-docs/releases/download/${VERSION}/${ARCHIVE}"
           curl -sSLo /tmp/terraform-docs.tar.gz "${URL}"

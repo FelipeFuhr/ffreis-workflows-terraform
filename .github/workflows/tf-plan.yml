@@ -59,16 +59,17 @@ jobs:
 
       - name: Terraform init
         id: init
-        run: terraform -chdir=${{ inputs.chdir }} init -input=false
+        run: terraform -chdir="${{ inputs.chdir }}" init -input=false
 
       - name: Terraform plan
         id: plan
+        env:
+          TF_CLI_ARGS_plan: ${{ inputs.plan-args }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} plan \
+          terraform -chdir="${{ inputs.chdir }}" plan \
             -no-color \
             -out=tfplan \
-            ${{ inputs.plan-args }} \
             2>&1 | tee /tmp/tfplan-output.txt
 
       - name: Post plan output as PR comment

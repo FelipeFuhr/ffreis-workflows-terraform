@@ -1,0 +1,52 @@
+name: Terraform Validate
+
+on:
+  workflow_call:
+    inputs:
+      terraform-version:
+        description: "Terraform version to use"
+        type: string
+        default: "1.9.8"
+      chdir:
+        description: "Terraform root module directory relative to repo root"
+        type: string
+        default: "stack"
+      validate-all-modules:
+        description: "If true, discovers and validates all module subdirs via find modules -mindepth 1 -maxdepth 1 -type d"
+        type: boolean
+        default: false
+      modules-dir:
+        description: "Used when validate-all-modules is true"
+        type: string
+        default: "modules"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate (terraform validate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform-version }}
+
+      - name: Validate single root module
+        if: ${{ !inputs.validate-all-modules }}
+        run: |
+          set -euo pipefail
+          terraform -chdir="${{ inputs.chdir }}" init -backend=false -input=false
+          terraform -chdir="${{ inputs.chdir }}" validate
+
+      - name: Validate all modules
+        if: ${{ inputs.validate-all-modules }}
+        run: |
+          set -euo pipefail
+          find "${{ inputs.modules-dir }}" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
+            echo "── Validating $dir ──"
+            terraform -chdir="$dir" init -backend=false -input=false
+            terraform -chdir="$dir" validate
+          done

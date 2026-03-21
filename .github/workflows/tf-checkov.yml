@@ -1,0 +1,76 @@
+name: Terraform Compliance Scan (Checkov)
+
+on:
+  workflow_call:
+    inputs:
+      checkov-version:
+        description: "Checkov version to install"
+        type: string
+        default: "3.2.0"
+      scan-directory:
+        description: "Directory to scan"
+        type: string
+        default: "."
+      framework:
+        description: "Checkov framework to use"
+        type: string
+        default: "terraform"
+      soft-fail:
+        description: "Exit 0 even if checks fail (soft-fail mode)"
+        type: boolean
+        default: false
+      skip-check:
+        description: "Comma-separated check IDs to skip, e.g. CKV_AWS_1,CKV_AWS_2"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  checkov:
+    name: Compliance scan (checkov)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Checkov
+        run: |
+          set -euo pipefail
+          pip install "checkov==${{ inputs.checkov-version }}"
+
+      - name: Run Checkov (with soft-fail, with skip-check)
+        if: ${{ inputs.soft-fail && inputs.skip-check != '' }}
+        run: |
+          set -euo pipefail
+          checkov \
+            -d ${{ inputs.scan-directory }} \
+            --framework ${{ inputs.framework }} \
+            --skip-check ${{ inputs.skip-check }} \
+            --soft-fail
+
+      - name: Run Checkov (with soft-fail, no skip-check)
+        if: ${{ inputs.soft-fail && inputs.skip-check == '' }}
+        run: |
+          set -euo pipefail
+          checkov \
+            -d ${{ inputs.scan-directory }} \
+            --framework ${{ inputs.framework }} \
+            --soft-fail
+
+      - name: Run Checkov (hard-fail, with skip-check)
+        if: ${{ !inputs.soft-fail && inputs.skip-check != '' }}
+        run: |
+          set -euo pipefail
+          checkov \
+            -d ${{ inputs.scan-directory }} \
+            --framework ${{ inputs.framework }} \
+            --skip-check ${{ inputs.skip-check }}
+
+      - name: Run Checkov (hard-fail, no skip-check)
+        if: ${{ !inputs.soft-fail && inputs.skip-check == '' }}
+        run: |
+          set -euo pipefail
+          checkov \
+            -d ${{ inputs.scan-directory }} \
+            --framework ${{ inputs.framework }}

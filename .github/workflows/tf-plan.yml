@@ -1,0 +1,134 @@
+name: Terraform Plan
+
+on:
+  workflow_call:
+    inputs:
+      terraform-version:
+        description: "Terraform version to use"
+        type: string
+        default: "1.9.8"
+      environment:
+        description: "e.g. dev, staging, prod"
+        type: string
+        required: true
+      chdir:
+        description: "Terraform root module directory relative to repo root"
+        type: string
+        default: "infra/stack"
+      aws-region:
+        description: "AWS region"
+        type: string
+        default: "us-east-1"
+      plan-args:
+        description: "Extra terraform plan flags"
+        type: string
+        default: ""
+    secrets:
+      AWS_ROLE_ARN:
+        required: true
+      TF_STATE_BUCKET:
+        required: false
+      TF_STATE_KEY:
+        required: false
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    name: Plan (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform-version }}
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ inputs.aws-region }}
+          role-session-name: github-${{ github.run_id }}-${{ inputs.environment }}-plan
+
+      - name: Terraform init
+        id: init
+        run: terraform -chdir="${{ inputs.chdir }}" init -input=false
+
+      - name: Terraform plan
+        id: plan
+        env:
+          TF_CLI_ARGS_plan: ${{ inputs.plan-args }}
+        run: |
+          set -euo pipefail
+          terraform -chdir="${{ inputs.chdir }}" plan \
+            -no-color \
+            -out=tfplan \
+            2>&1 | tee /tmp/tfplan-output.txt
+
+      - name: Post plan output as PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const env = '${{ inputs.environment }}';
+            const planOutcome = '${{ steps.plan.outcome }}';
+            const initOutcome = '${{ steps.init.outcome }}';
+
+            let planOutput = '';
+            if (fs.existsSync('/tmp/tfplan-output.txt')) {
+              planOutput = fs.readFileSync('/tmp/tfplan-output.txt', 'utf8');
+              if (planOutput.length > 10000) {
+                planOutput = planOutput.substring(0, 10000) + '\n...(output truncated)';
+              }
+            }
+
+            const statusIcon = (outcome) => outcome === 'success' ? '✅' : '❌';
+
+            const comment = [
+              `## Terraform Plan — \`${env}\``,
+              '',
+              `${statusIcon(initOutcome)} **Init** \`${initOutcome}\``,
+              `${statusIcon(planOutcome)} **Plan** \`${planOutcome}\``,
+              '',
+              planOutput
+                ? `<details><summary>Plan output</summary>\n\n\`\`\`terraform\n${planOutput}\n\`\`\`\n</details>`
+                : '',
+              '',
+              `*Triggered by @${{ github.actor }} on \`${{ github.event_name }}\`*`,
+            ].join('\n');
+
+            // Find and update existing comment or create new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const marker = `<!-- tf-plan-${env} -->`;
+            const existing = comments.find(c => c.body.includes(marker));
+
+            const body = marker + '\n' + comment;
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

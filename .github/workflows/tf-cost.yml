@@ -1,0 +1,66 @@
+name: Terraform Cost Estimation (Infracost)
+
+on:
+  workflow_call:
+    inputs:
+      terraform-version:
+        description: "Terraform version to use"
+        type: string
+        default: "1.9.8"
+      path:
+        description: "Terraform directory to estimate"
+        type: string
+        default: "infra/stack"
+      aws-region:
+        description: "AWS region"
+        type: string
+        default: "us-east-1"
+    secrets:
+      INFRACOST_API_KEY:
+        required: true
+      AWS_ROLE_ARN:
+        required: false
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  cost:
+    name: Cost estimation (infracost)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ inputs.aws-region }}
+          role-session-name: github-${{ github.run_id }}-infracost
+
+      - name: Run Infracost breakdown
+        run: |
+          set -euo pipefail
+          infracost breakdown \
+            --path=${{ inputs.path }} \
+            --format=json \
+            --out-file=infracost.json
+
+      - name: Post Infracost comment on PR
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          infracost comment github \
+            --path=infracost.json \
+            --repo=${{ github.repository }} \
+            --github-token=${{ github.token }} \
+            --pull-request=${{ github.event.pull_request.number }} \
+            --behavior=update

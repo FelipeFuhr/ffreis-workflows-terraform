@@ -1,0 +1,39 @@
+name: Terraform Lint
+
+on:
+  workflow_call:
+    inputs:
+      tflint-version:
+        description: "TFLint version to use"
+        type: string
+        default: "v0.50.3"
+      lint-path:
+        description: "Directory to lint, e.g. 'infra/' or '.'"
+        type: string
+        default: "."
+      tflint-config:
+        description: "Path to tflint config file"
+        type: string
+        default: ".tflint.hcl"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint (tflint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: ${{ inputs.tflint-version }}
+
+      - name: Init TFLint
+        working-directory: ${{ inputs.lint-path }}
+        run: tflint --init
+
+      - name: Run TFLint
+        working-directory: ${{ inputs.lint-path }}
+        run: tflint --recursive --format compact

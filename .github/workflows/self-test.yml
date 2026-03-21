@@ -1,0 +1,64 @@
+name: Self Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Validates the 8 static-analysis workflows against examples/hello/.
+#
+# The following 5 workflows are intentionally NOT included in this self-test
+# because they require live AWS infrastructure:
+#
+#   tf-plan   — requires AWS_ROLE_ARN (OIDC) and a Terraform state backend
+#   tf-apply  — creates real AWS resources; must never auto-trigger on push
+#   tf-destroy — destroys real AWS resources; must never auto-trigger on push
+#   tf-drift  — requires live state and real AWS credentials
+#   tf-cost   — requires INFRACOST_API_KEY and AWS credentials
+#
+# These can only be validated by a downstream consumer project that provides
+# real AWS credentials and a configured state backend.
+
+jobs:
+  fmt:
+    uses: ./.github/workflows/tf-fmt.yml
+    with:
+      working-directory: examples/hello
+
+  validate:
+    uses: ./.github/workflows/tf-validate.yml
+    with:
+      chdir: examples/hello/stack
+
+  lint:
+    uses: ./.github/workflows/tf-lint.yml
+    with:
+      lint-path: examples/hello
+      tflint-config: examples/hello/.tflint.hcl
+
+  docs:
+    uses: ./.github/workflows/tf-docs.yml
+    with:
+      working-directory: examples/hello
+      output-file: README.md
+
+  security:
+    uses: ./.github/workflows/tf-security.yml
+    with:
+      scan-ref: examples/hello
+
+  tfsec:
+    uses: ./.github/workflows/tf-tfsec.yml
+    with:
+      scan-path: examples/hello
+
+  checkov:
+    uses: ./.github/workflows/tf-checkov.yml
+    with:
+      scan-directory: examples/hello
+
+  test-tidy:
+    uses: ./.github/workflows/tf-test-tidy.yml
+    with:
+      test-dir: examples/hello/test

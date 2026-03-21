@@ -16,7 +16,7 @@ lint: ## Lint workflow YAML with actionlint + tflint on examples
 	}
 	actionlint .github/workflows/*.yml
 	@if command -v tflint >/dev/null 2>&1; then \
-		tflint --chdir=examples/hello --init && tflint --chdir=examples/hello --recursive; \
+		cd examples/hello && tflint --init && tflint --recursive; \
 	else \
 		echo "tflint not found; skipping example lint"; \
 	fi

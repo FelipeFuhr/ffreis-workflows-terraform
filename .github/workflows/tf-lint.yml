@@ -31,7 +31,9 @@ jobs:
           tflint_version: ${{ inputs.tflint-version }}
 
       - name: Init TFLint
-        run: tflint --chdir=${{ inputs.lint-path }} --init
+        working-directory: ${{ inputs.lint-path }}
+        run: tflint --init
 
       - name: Run TFLint
-        run: tflint --chdir=${{ inputs.lint-path }} --recursive --format compact
+        working-directory: ${{ inputs.lint-path }}
+        run: tflint --recursive --format compact

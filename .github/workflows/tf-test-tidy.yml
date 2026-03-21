@@ -1,0 +1,38 @@
+name: Terraform Test Tidy (Terratest)
+
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        description: "Go version to use"
+        type: string
+        default: "1.21"
+      test-dir:
+        description: "Directory containing go.mod for tests"
+        type: string
+        default: "test"
+
+permissions:
+  contents: read
+
+jobs:
+  test-tidy:
+    name: Test module (tidy + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.go-version }}
+          cache-dependency-path: ${{ inputs.test-dir }}/go.sum
+
+      - name: Verify go.mod is tidy
+        run: |
+          set -euo pipefail
+          cd ${{ inputs.test-dir }}
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+
+      - name: Compile test package (no AWS needed)
+        run: cd ${{ inputs.test-dir }} && go build ./...

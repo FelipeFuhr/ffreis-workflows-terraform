@@ -1,0 +1,34 @@
+name: Terraform Security Scan (tfsec)
+
+on:
+  workflow_call:
+    inputs:
+      scan-path:
+        description: "Directory to scan, e.g. 'infra/' or '.'"
+        type: string
+        default: "."
+      minimum-severity:
+        description: "Minimum severity level to report (CRITICAL, HIGH, MEDIUM, LOW)"
+        type: string
+        default: "HIGH"
+      soft-fail:
+        description: "Exit 0 even when findings are present (useful during ramp-up)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  tfsec:
+    name: Security (tfsec)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: ${{ inputs.scan-path }}
+          minimum_severity: ${{ inputs.minimum-severity }}
+          soft_fail: ${{ inputs.soft-fail }}

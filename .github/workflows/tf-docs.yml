@@ -53,7 +53,6 @@ jobs:
           set -euo pipefail
 
           # Collect module dirs: subdirectories of working-directory that contain .tf files
-          found=0
           find "${WORKING_DIR}" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
             if ls "${dir}"/*.tf > /dev/null 2>&1; then
               echo "── Running terraform-docs on ${dir} ──"
@@ -61,7 +60,6 @@ jobs:
                 --output-file "${OUTPUT_FILE}" \
                 --output-mode "${OUTPUT_MODE}" \
                 "${dir}"
-              found=1
             fi
           done
 

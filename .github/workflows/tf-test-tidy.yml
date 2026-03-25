@@ -20,9 +20,9 @@ jobs:
     name: Test module (tidy + build)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go-version }}
           cache-dependency-path: ${{ inputs.test-dir }}/go.sum

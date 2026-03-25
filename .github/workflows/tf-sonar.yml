@@ -8,11 +8,11 @@ on:
         type: string
         default: "."
       sonar-project-key:
-        description: "SonarCloud project key (defaults to repository name)"
+        description: "SonarCloud project key (defaults to sonar-project.properties or owner_repo)"
         type: string
         default: ""
       sonar-organization:
-        description: "SonarCloud organization slug"
+        description: "SonarCloud organization slug (defaults to sonar-project.properties or repository owner)"
         type: string
         default: ""
     secrets:
@@ -26,12 +26,58 @@ jobs:
   sonar:
     name: SonarCloud
     runs-on: ubuntu-latest
-    if: vars.SONAR_ENABLED != 'false'
+    if: vars.SONAR_ENABLED != 'false' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
+
+      - name: Resolve Sonar settings
+        id: vars
+        env:
+          WORKING_DIRECTORY: ${{ inputs.working-directory }}
+          INPUT_PROJECT_KEY: ${{ inputs.sonar-project-key }}
+          INPUT_ORG: ${{ inputs.sonar-organization }}
+          VAR_ORG: ${{ vars.SONAR_ORGANIZATION }}
+          REPO: ${{ github.repository }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$SONAR_TOKEN" ]]; then
+            echo "ERROR: SONAR_TOKEN is required. Configure repository secret SONAR_TOKEN." >&2
+            exit 1
+          fi
+
+          project_key="$INPUT_PROJECT_KEY"
+          org="$INPUT_ORG"
+
+          props="${WORKING_DIRECTORY%/}/sonar-project.properties"
+          if [[ -f "$props" ]]; then
+            if [[ -z "$project_key" ]]; then
+              project_key="$(sed -n 's/^[[:space:]]*sonar\\.projectKey[[:space:]]*=[[:space:]]*//p' "$props" | head -n 1 || true)"
+            fi
+            if [[ -z "$org" ]]; then
+              org="$(sed -n 's/^[[:space:]]*sonar\\.organization[[:space:]]*=[[:space:]]*//p' "$props" | head -n 1 || true)"
+            fi
+          fi
+
+          if [[ -z "$project_key" ]]; then
+            project_key="${REPO//\//_}"
+          fi
+          if [[ -z "$org" ]]; then
+            org="$VAR_ORG"
+          fi
+          if [[ -z "$org" ]]; then
+            org="$(echo "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')"
+          fi
+
+          {
+            echo "project_key=$project_key"
+            echo "org=$org"
+          } >> "$GITHUB_OUTPUT"
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # nosemgrep: generic.secrets.security.detected-sonarqube-docs-api-key.detected-sonarqube-docs-api-key
@@ -41,6 +87,6 @@ jobs:
         with:
           projectBaseDir: ${{ inputs.working-directory }}
           args: >
-            -Dsonar.projectKey=${{ inputs.sonar-project-key || github.event.repository.name }}
-            -Dsonar.organization=${{ inputs.sonar-organization || vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ steps.vars.outputs.project_key }}
+            -Dsonar.organization=${{ steps.vars.outputs.org }}
             -Dsonar.sources=.

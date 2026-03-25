@@ -35,42 +35,58 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Checkov
+        env:
+          CHECKOV_VERSION: ${{ inputs.checkov-version }}
         run: |
           set -euo pipefail
-          pip install "checkov==${{ inputs.checkov-version }}"
+          pip install "checkov==${CHECKOV_VERSION}"
 
       - name: Run Checkov (with soft-fail, with skip-check)
         if: ${{ inputs.soft-fail && inputs.skip-check != '' }}
+        env:
+          SCAN_DIRECTORY: ${{ inputs.scan-directory }}
+          FRAMEWORK: ${{ inputs.framework }}
+          SKIP_CHECK: ${{ inputs.skip-check }}
         run: |
           set -euo pipefail
           checkov \
-            -d ${{ inputs.scan-directory }} \
-            --framework ${{ inputs.framework }} \
-            --skip-check ${{ inputs.skip-check }} \
+            -d "$SCAN_DIRECTORY" \
+            --framework "$FRAMEWORK" \
+            --skip-check "$SKIP_CHECK" \
             --soft-fail
 
       - name: Run Checkov (with soft-fail, no skip-check)
         if: ${{ inputs.soft-fail && inputs.skip-check == '' }}
+        env:
+          SCAN_DIRECTORY: ${{ inputs.scan-directory }}
+          FRAMEWORK: ${{ inputs.framework }}
         run: |
           set -euo pipefail
           checkov \
-            -d ${{ inputs.scan-directory }} \
-            --framework ${{ inputs.framework }} \
+            -d "$SCAN_DIRECTORY" \
+            --framework "$FRAMEWORK" \
             --soft-fail
 
       - name: Run Checkov (hard-fail, with skip-check)
         if: ${{ !inputs.soft-fail && inputs.skip-check != '' }}
+        env:
+          SCAN_DIRECTORY: ${{ inputs.scan-directory }}
+          FRAMEWORK: ${{ inputs.framework }}
+          SKIP_CHECK: ${{ inputs.skip-check }}
         run: |
           set -euo pipefail
           checkov \
-            -d ${{ inputs.scan-directory }} \
-            --framework ${{ inputs.framework }} \
-            --skip-check ${{ inputs.skip-check }}
+            -d "$SCAN_DIRECTORY" \
+            --framework "$FRAMEWORK" \
+            --skip-check "$SKIP_CHECK"
 
       - name: Run Checkov (hard-fail, no skip-check)
         if: ${{ !inputs.soft-fail && inputs.skip-check == '' }}
+        env:
+          SCAN_DIRECTORY: ${{ inputs.scan-directory }}
+          FRAMEWORK: ${{ inputs.framework }}
         run: |
           set -euo pipefail
           checkov \
-            -d ${{ inputs.scan-directory }} \
-            --framework ${{ inputs.framework }}
+            -d "$SCAN_DIRECTORY" \
+            --framework "$FRAMEWORK"

@@ -47,20 +47,26 @@ jobs:
           role-session-name: github-${{ github.run_id }}-infracost
 
       - name: Run Infracost breakdown
+        env:
+          PATH_INPUT: ${{ inputs.path }}
         run: |
           set -euo pipefail
           infracost breakdown \
-            --path=${{ inputs.path }} \
+            --path="$PATH_INPUT" \
             --format=json \
             --out-file=infracost.json
 
       - name: Post Infracost comment on PR
         if: github.event_name == 'pull_request'
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
           infracost comment github \
             --path=infracost.json \
-            --repo=${{ github.repository }} \
-            --github-token=${{ github.token }} \
-            --pull-request=${{ github.event.pull_request.number }} \
+            --repo="$GH_REPO" \
+            --github-token="$GH_TOKEN" \
+            --pull-request="$PR_NUMBER" \
             --behavior=update

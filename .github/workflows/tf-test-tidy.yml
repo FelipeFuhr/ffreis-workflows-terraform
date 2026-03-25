@@ -28,11 +28,15 @@ jobs:
           cache-dependency-path: ${{ inputs.test-dir }}/go.sum
 
       - name: Verify go.mod is tidy
+        env:
+          TEST_DIR: ${{ inputs.test-dir }}
         run: |
           set -euo pipefail
-          cd ${{ inputs.test-dir }}
+          cd "$TEST_DIR"
           go mod tidy
           git diff --exit-code go.mod go.sum
 
       - name: Compile test package (no AWS needed)
-        run: cd ${{ inputs.test-dir }} && go build ./...
+        env:
+          TEST_DIR: ${{ inputs.test-dir }}
+        run: cd "$TEST_DIR" && go build ./...

@@ -59,22 +59,25 @@ jobs:
 
       - name: Terraform init
         id: init
-        run: terraform -chdir="${{ inputs.chdir }}" init -input=false
+        env:
+          CHDIR: ${{ inputs.chdir }}
+        run: terraform -chdir="$CHDIR" init -input=false
 
       - name: Terraform plan
         id: plan
         env:
           TF_CLI_ARGS_plan: ${{ inputs.plan-args }}
+          CHDIR: ${{ inputs.chdir }}
         run: |
           set -euo pipefail
-          terraform -chdir="${{ inputs.chdir }}" plan \
+          terraform -chdir="$CHDIR" plan \
             -no-color \
             -out=tfplan \
             2>&1 | tee /tmp/tfplan-output.txt
 
       - name: Post plan output as PR comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v6
         with:
           script: |
             const fs = require('fs');

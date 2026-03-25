@@ -49,13 +49,17 @@ jobs:
           role-session-name: github-${{ github.run_id }}-${{ inputs.environment }}-drift
 
       - name: Terraform init
-        run: terraform -chdir=${{ inputs.chdir }} init -input=false
+        env:
+          CHDIR: ${{ inputs.chdir }}
+        run: terraform -chdir="$CHDIR" init -input=false
 
       - name: Terraform plan (drift check)
         # -detailed-exitcode: exit 0 = no changes, exit 1 = error, exit 2 = changes detected (drift)
+        env:
+          CHDIR: ${{ inputs.chdir }}
         run: |
           set -euo pipefail
-          terraform -chdir=${{ inputs.chdir }} plan \
+          terraform -chdir="$CHDIR" plan \
             -detailed-exitcode \
             -no-color \
             -input=false

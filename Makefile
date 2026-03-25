@@ -41,6 +41,11 @@ fmt-check: ## Check Terraform example formatting
 
 .PHONY: secrets-scan-staged
 secrets-scan-staged: ## Scan staged files for secrets
+	@command -v gitleaks >/dev/null 2>&1 || { \
+		echo "ERROR: gitleaks not found. Install it from https://github.com/gitleaks/gitleaks#installing"; \
+		echo "Tip: run 'make setup' after installing to verify your dev environment."; \
+		exit 1; \
+	}
 	gitleaks protect --staged --redact
 
 .PHONY: lefthook-bootstrap
@@ -53,3 +58,14 @@ lefthook-install: lefthook-bootstrap ## Install git hooks via lefthook
 
 .PHONY: hooks
 hooks: lefthook-install ## Bootstrap and install all git hooks
+
+.PHONY: setup
+setup: hooks ## Install git hooks and verify required tools
+	@command -v gitleaks >/dev/null 2>&1 || { \
+		echo ""; \
+		echo "ACTION REQUIRED: gitleaks is not installed."; \
+		echo "Install it from https://github.com/gitleaks/gitleaks#installing then re-run 'make setup'."; \
+		echo ""; \
+		exit 1; \
+	}
+	@echo "Dev environment ready."

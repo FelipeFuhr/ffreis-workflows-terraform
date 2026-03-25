@@ -31,9 +31,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install terraform-docs
+        env:
+          VERSION: ${{ inputs.terraform-docs-version }}
         run: |
           set -euo pipefail
-          VERSION="${{ inputs.terraform-docs-version }}"
           # VERSION is expected to include the leading 'v' to match the release tag and archive filename
           ARCHIVE="terraform-docs-${VERSION}-linux-amd64.tar.gz"
           URL="https://github.com/terraform-docs/terraform-docs/releases/download/${VERSION}/${ARCHIVE}"
@@ -44,11 +45,12 @@ jobs:
           terraform-docs --version
 
       - name: Generate terraform-docs for each module
+        env:
+          WORKING_DIR: ${{ inputs.working-directory }}
+          OUTPUT_FILE: ${{ inputs.output-file }}
+          OUTPUT_MODE: ${{ inputs.output-mode }}
         run: |
           set -euo pipefail
-          WORKING_DIR="${{ inputs.working-directory }}"
-          OUTPUT_FILE="${{ inputs.output-file }}"
-          OUTPUT_MODE="${{ inputs.output-mode }}"
 
           # Collect module dirs: subdirectories of working-directory that contain .tf files
           found=0

@@ -27,4 +27,6 @@ jobs:
           terraform_version: ${{ inputs.terraform-version }}
 
       - name: Check formatting
-        run: terraform fmt -check -recursive ${{ inputs.working-directory }}
+        env:
+          WORKING_DIR: ${{ inputs.working-directory }}
+        run: terraform fmt -check -recursive "$WORKING_DIR"

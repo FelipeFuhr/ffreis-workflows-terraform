@@ -53,16 +53,22 @@ jobs:
           role-session-name: github-${{ github.run_id }}-${{ inputs.environment }}-apply
 
       - name: Terraform init
-        run: terraform -chdir="${{ inputs.chdir }}" init -input=false
+        env:
+          CHDIR: ${{ inputs.chdir }}
+        run: terraform -chdir="$CHDIR" init -input=false
 
       - name: Terraform apply (auto-approve)
         if: ${{ inputs.auto-approve }}
+        env:
+          CHDIR: ${{ inputs.chdir }}
         run: |
           set -euo pipefail
-          terraform -chdir="${{ inputs.chdir }}" apply -auto-approve -input=false
+          terraform -chdir="$CHDIR" apply -auto-approve -input=false
 
       - name: Terraform apply (interactive)
         if: ${{ !inputs.auto-approve }}
+        env:
+          CHDIR: ${{ inputs.chdir }}
         run: |
           set -euo pipefail
-          terraform -chdir="${{ inputs.chdir }}" apply -input=false
+          terraform -chdir="$CHDIR" apply -input=false

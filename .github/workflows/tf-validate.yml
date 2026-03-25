@@ -36,16 +36,20 @@ jobs:
 
       - name: Validate single root module
         if: ${{ !inputs.validate-all-modules }}
+        env:
+          CHDIR: ${{ inputs.chdir }}
         run: |
           set -euo pipefail
-          terraform -chdir="${{ inputs.chdir }}" init -backend=false -input=false
-          terraform -chdir="${{ inputs.chdir }}" validate
+          terraform -chdir="$CHDIR" init -backend=false -input=false
+          terraform -chdir="$CHDIR" validate
 
       - name: Validate all modules
         if: ${{ inputs.validate-all-modules }}
+        env:
+          MODULES_DIR: ${{ inputs.modules-dir }}
         run: |
           set -euo pipefail
-          find "${{ inputs.modules-dir }}" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
+          find "$MODULES_DIR" -mindepth 1 -maxdepth 1 -type d | sort | while read -r dir; do
             echo "── Validating $dir ──"
             terraform -chdir="$dir" init -backend=false -input=false
             terraform -chdir="$dir" validate

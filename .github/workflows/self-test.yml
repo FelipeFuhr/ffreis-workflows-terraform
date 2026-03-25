@@ -6,7 +6,11 @@ on:
   pull_request:
     branches: [main]
 
-# Validates the 8 static-analysis workflows against examples/hello/.
+# Validates the static-analysis and security workflows against examples/hello/.
+#
+# tf-sonar requires SONAR_TOKEN to be configured in the repository. The job
+# is skipped on fork pull requests (secrets are not available to forks), but
+# runs on all other events and fails if the token is absent.
 #
 # The following 5 workflows are intentionally NOT included in this self-test
 # because they require live AWS infrastructure:
@@ -21,6 +25,9 @@ on:
 # real AWS credentials and a configured state backend.
 
 jobs:
+  workflows-policy:
+    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@cd834ffd19f4cf2cef228d8f261db82768e88348
+
   fmt:
     uses: ./.github/workflows/tf-fmt.yml
     with:
@@ -62,3 +69,16 @@ jobs:
     uses: ./.github/workflows/tf-test-tidy.yml
     with:
       test-dir: examples/hello/test
+
+  semgrep:
+    uses: ./.github/workflows/tf-semgrep.yml
+    with:
+      working-directory: examples/hello
+
+  sonar:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    uses: ./.github/workflows/tf-sonar.yml
+    with:
+      working-directory: examples/hello
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

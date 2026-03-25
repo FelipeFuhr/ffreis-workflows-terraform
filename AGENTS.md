@@ -7,15 +7,21 @@ The `examples/hello/` directory is the canonical test subject used by `self-test
 
 ## Rules for adding or modifying workflows
 
-### 1. Every new workflow must be in `self-test.yml` — unless it requires live AWS
+### 1. Every new reusable workflow (`workflow_call`) must be in `self-test.yml` — unless it requires live AWS
 
-Every file added to `.github/workflows/` (except `self-test.yml` itself) **must** have a
-corresponding job in `self-test.yml` that calls it against `examples/hello/`, **unless** it
-requires live AWS infrastructure or causes destructive side effects that cannot be safely
+Every new reusable workflow file added to `.github/workflows/` whose primary purpose is to be
+called via `workflow_call` (the `tf-*.yml` library, excluding `self-test.yml` itself) **must**
+have a corresponding job in `self-test.yml` that calls it against `examples/hello/`, **unless**
+it requires live AWS infrastructure or causes destructive side effects that cannot be safely
 invoked in CI.
 
-A workflow that is not in `self-test.yml` and not listed in the exclusion table below is
-unverified. It will not be merged.
+Repo-internal CI workflows that run directly on events (for example, PR hygiene, security, or
+automation helpers such as `devops-*.yml`) are exempt from this rule and do **not** need to be
+exercised by `self-test.yml`, because they are not part of the reusable Terraform workflow
+library.
+
+A reusable workflow that is not in `self-test.yml` and not listed in the exclusion table below
+is considered unverified and normally should not be merged.
 
 **Currently excluded from `self-test.yml`** (require live AWS; validated only by downstream
 consumer projects that supply real credentials and a configured state backend):
@@ -105,20 +111,21 @@ workflows. Use job-level `if:` gating in `self-test.yml` instead (see the patter
 
 ---
 
-### 6. Pin third-party actions to a full commit SHA
+### 6. Pin third-party (non-GitHub-owned) actions to a full commit SHA
+
+GitHub-owned actions (those under the `actions/` org) may be referenced by major version tag
+(e.g. `actions/checkout@v4`). Third-party actions from other organizations must be pinned to a
+full commit SHA to prevent supply-chain attacks:
 
 ```yaml
-# BAD
+# OK — GitHub-owned action, major-version tag is acceptable
 uses: actions/checkout@v4
 
-# GOOD
-uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-```
+# BAD — third-party action pinned only by tag
+uses: SonarSource/sonarqube-scan-action@v5
 
-When Semgrep flags a SHA as a false-positive secret, suppress it inline:
-
-```yaml
-uses: SonarSource/sonarqube-scan-action@<sha> # nosemgrep: generic.secrets.security.detected-sonarqube-docs-api-key.detected-sonarqube-docs-api-key
+# GOOD — third-party action pinned to a full commit SHA
+uses: SonarSource/sonarqube-scan-action@<sha> # v5
 ```
 
 ---

@@ -15,11 +15,15 @@ on:
         description: "AWS region"
         type: string
         default: "us-east-1"
+      dry-run:
+        description: "If true, validates configuration without requiring Infracost/AWS credentials"
+        type: boolean
+        default: false
     secrets:
       INFRACOST_API_KEY:
-        required: true
+        required: false
       AWS_ROLE_ARN:
-        required: true
+        required: false
 
 permissions:
   id-token: write
@@ -31,21 +35,40 @@ jobs:
     name: Cost estimation (infracost)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Setup Infracost
-        uses: infracost/actions/setup@v3
+        if: ${{ !inputs.dry-run }}
+        uses: infracost/actions/setup@e9d6e6cd65e168e76b0de50ff9957d2fe8bb1832 # v3
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
+      - name: Require INFRACOST_API_KEY and AWS_ROLE_ARN (when dry-run=false)
+        if: ${{ !inputs.dry-run }}
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$INFRACOST_API_KEY" ]]; then
+            echo "::error::Missing required secret INFRACOST_API_KEY"
+            exit 1
+          fi
+          if [[ -z "$AWS_ROLE_ARN" ]]; then
+            echo "::error::Missing required secret AWS_ROLE_ARN"
+            exit 1
+          fi
+
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v6
+        if: ${{ !inputs.dry-run }}
+        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c # v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ inputs.aws-region }}
           role-session-name: github-${{ github.run_id }}-infracost
 
       - name: Run Infracost breakdown
+        if: ${{ !inputs.dry-run }}
         env:
           PATH_INPUT: ${{ inputs.path }}
         run: |
@@ -69,3 +92,9 @@ jobs:
             --github-token="$GH_TOKEN" \
             --pull-request="$PR_NUMBER" \
             --behavior=update
+
+      - name: Dry-run note
+        if: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          echo "dry-run=true: skipping Infracost and AWS credential steps."

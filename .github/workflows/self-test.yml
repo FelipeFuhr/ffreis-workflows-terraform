@@ -17,17 +17,9 @@ permissions:
 # is skipped on fork pull requests (secrets are not available to forks), but
 # runs on all other events and fails if the token is absent.
 #
-# The following 5 workflows are intentionally NOT included in this self-test
-# because they require live AWS infrastructure:
-#
-#   tf-plan   — requires AWS_ROLE_ARN (OIDC) and a Terraform state backend
-#   tf-apply  — creates real AWS resources; must never auto-trigger on push
-#   tf-destroy — destroys real AWS resources; must never auto-trigger on push
-#   tf-drift  — requires live state and real AWS credentials
-#   tf-cost   — requires INFRACOST_API_KEY and AWS credentials
-#
-# These can only be validated by a downstream consumer project that provides
-# real AWS credentials and a configured state backend.
+# The AWS-backed workflows (tf-plan/apply/destroy/drift/cost) are exercised in
+# `dry-run: true` mode so the workflow wiring is continuously validated without
+# requiring live infrastructure or secrets.
 
 jobs:
   workflows-policy:
@@ -93,3 +85,37 @@ jobs:
       working-directory: examples/hello
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  plan-dry-run:
+    uses: ./.github/workflows/tf-plan.yml
+    with:
+      environment: dev
+      chdir: examples/hello/stack
+      dry-run: true
+
+  drift-dry-run:
+    uses: ./.github/workflows/tf-drift.yml
+    with:
+      environment: dev
+      chdir: examples/hello/stack
+      dry-run: true
+
+  apply-dry-run:
+    uses: ./.github/workflows/tf-apply.yml
+    with:
+      environment: dev
+      chdir: examples/hello/stack
+      dry-run: true
+
+  destroy-dry-run:
+    uses: ./.github/workflows/tf-destroy.yml
+    with:
+      environment: dev
+      chdir: examples/hello/stack
+      dry-run: true
+
+  cost-dry-run:
+    uses: ./.github/workflows/tf-cost.yml
+    with:
+      path: examples/hello/stack
+      dry-run: true

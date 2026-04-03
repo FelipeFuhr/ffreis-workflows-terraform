@@ -20,7 +20,7 @@ jobs:
       contents: read
       actions: read
       security-events: write
-    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-gitleaks.yml@v0.1.3
+    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-gitleaks.yml@v0.1.7
     with:
       working-directory: "."
       scan-history: true

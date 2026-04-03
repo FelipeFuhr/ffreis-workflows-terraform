@@ -23,9 +23,13 @@ on:
         description: "Pass -auto-approve to terraform apply (plan-file based apply is not supported; use auto-approve: true)"
         type: boolean
         default: true
+      dry-run:
+        description: "If true, validates configuration without requiring AWS credentials/state"
+        type: boolean
+        default: false
     secrets:
       AWS_ROLE_ARN:
-        required: true
+        required: false
 
 permissions:
   id-token: write
@@ -38,15 +42,27 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
           terraform_version: ${{ inputs.terraform-version }}
 
+      - name: Require AWS_ROLE_ARN (when dry-run=false)
+        if: ${{ !inputs.dry-run }}
+        env:
+          AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$AWS_ROLE_ARN" ]]; then
+            echo "::error::Missing required secret AWS_ROLE_ARN"
+            exit 1
+          fi
+
       - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v6
+        if: ${{ !inputs.dry-run }}
+        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c # v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ inputs.aws-region }}
@@ -55,10 +71,25 @@ jobs:
       - name: Terraform init
         env:
           CHDIR: ${{ inputs.chdir }}
-        run: terraform -chdir="$CHDIR" init -input=false
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          if [[ "$DRY_RUN" == "true" ]]; then
+            terraform -chdir="$CHDIR" init -backend=false -input=false
+          else
+            terraform -chdir="$CHDIR" init -input=false
+          fi
+
+      - name: Terraform validate (dry-run)
+        if: ${{ inputs.dry-run }}
+        env:
+          CHDIR: ${{ inputs.chdir }}
+        run: |
+          set -euo pipefail
+          terraform -chdir="$CHDIR" validate -no-color
 
       - name: Terraform apply (auto-approve)
-        if: ${{ inputs.auto-approve }}
+        if: ${{ inputs.auto-approve && !inputs.dry-run }}
         env:
           CHDIR: ${{ inputs.chdir }}
         run: |
@@ -66,7 +97,7 @@ jobs:
           terraform -chdir="$CHDIR" apply -auto-approve -input=false
 
       - name: Terraform apply (interactive)
-        if: ${{ !inputs.auto-approve }}
+        if: ${{ !inputs.auto-approve && !inputs.dry-run }}
         env:
           CHDIR: ${{ inputs.chdir }}
         run: |

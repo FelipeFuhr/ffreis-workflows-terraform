@@ -15,16 +15,22 @@ on:
         description: "Exit code when vulnerabilities are found"
         type: number
         default: 1
+      upload-sarif:
+        description: "Upload SARIF to GitHub code scanning"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
+  actions: read
+  security-events: write
 
 jobs:
   security:
     name: Security (trivy)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Run Trivy (Terraform config scan)
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
@@ -32,5 +38,30 @@ jobs:
           scan-type: config
           scan-ref: ${{ inputs.scan-ref }}
           exit-code: ${{ inputs.exit-code }}
+          severity: ${{ inputs.severity }}
+          format: sarif
+          output: trivy.sarif
+
+      - name: Validate SARIF output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s trivy.sarif || (echo "trivy.sarif was not generated or is empty" >&2 && exit 1)
+
+      - name: Upload SARIF
+        if: inputs.upload-sarif && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
+        uses: github/codeql-action/upload-sarif@ff0a06e83cb2de871e5a09832bc6a81e7276941f
+        with:
+          sarif_file: trivy.sarif
+          category: trivy-config
+
+      - name: Run Trivy (table — findings summary)
+        if: failure()
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          scan-type: config
+          scan-ref: ${{ inputs.scan-ref }}
+          exit-code: "0"
           severity: ${{ inputs.severity }}
           format: table

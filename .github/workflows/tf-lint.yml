@@ -29,9 +29,13 @@ jobs:
       - uses: terraform-linters/setup-tflint@eb0f7c1b77f191dee552664e7884849ce3dd5176 # v6
         with:
           tflint_version: ${{ inputs.tflint-version }}
+          cache: true
+          tflint_config_path: ${{ inputs.tflint-config }}
 
       - name: Init TFLint
         working-directory: ${{ inputs.lint-path }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: tflint --init
 
       - name: Run TFLint

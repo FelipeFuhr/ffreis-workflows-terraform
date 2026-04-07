@@ -32,6 +32,34 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
+      - name: Run Trivy (table)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
+        with:
+          scan-type: config
+          scan-ref: ${{ inputs.scan-ref }}
+          exit-code: "0"
+          severity: ${{ inputs.severity }}
+          format: table
+          output: trivy.txt
+          hide-progress: true
+
+      - name: Publish Trivy findings to summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -s trivy.txt ]]; then
+            {
+              echo "### Trivy findings"
+              echo ""
+              echo "<pre>"
+              cat trivy.txt
+              echo "</pre>"
+            } >> "$GITHUB_STEP_SUMMARY"
+            cat trivy.txt
+          else
+            echo "No Trivy findings were written to trivy.txt"
+          fi
+
       - name: Run Trivy (Terraform config scan)
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
         with:
@@ -41,6 +69,9 @@ jobs:
           severity: ${{ inputs.severity }}
           format: sarif
           output: trivy.sarif
+          hide-progress: true
+          limit-severities-for-sarif: true
+          skip-setup-trivy: true
 
       - name: Validate SARIF output
         shell: bash
@@ -54,14 +85,3 @@ jobs:
         with:
           sarif_file: trivy.sarif
           category: trivy-config
-
-      - name: Run Trivy (table — findings summary)
-        if: failure()
-        continue-on-error: true
-        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
-        with:
-          scan-type: config
-          scan-ref: ${{ inputs.scan-ref }}
-          exit-code: "0"
-          severity: ${{ inputs.severity }}
-          format: table

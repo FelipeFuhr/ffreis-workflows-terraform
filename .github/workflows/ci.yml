@@ -23,9 +23,21 @@ permissions:
 
 jobs:
   workflows-policy:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
 
   codeql-actions:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
     with:
       languages: actions
@@ -33,62 +45,124 @@ jobs:
       upload-sarif: false
 
   fmt:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-fmt.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
 
   validate:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-validate.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       chdir: examples/hello/stack
 
   lint:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-lint.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       lint-path: examples/hello
       tflint-config: examples/hello/.tflint.hcl
 
   docs:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-docs.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
       output-file: README.md
 
   security:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-security.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       scan-ref: examples/hello
       upload-sarif: false
 
   tfsec:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-tfsec.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       scan-path: examples/hello
 
   checkov:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-checkov.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       scan-directory: examples/hello
 
   test-tidy:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       test-dir: examples/hello/test
 
   semgrep:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
 
   sonar:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      issues: write
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-sonar.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  plan-dry-run:
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-plan.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       environment: dev

@@ -8,6 +8,8 @@ permissions:
   contents: read
   actions: read
   security-events: write
+  issues: write
+  pull-requests: write
 
 # Validates the static-analysis and security workflows against examples/hello/.
 #
@@ -21,101 +23,101 @@ permissions:
 
 jobs:
   workflows-policy:
-    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@main
+    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
 
   codeql-actions:
-    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@main
+    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
     with:
       languages: actions
       source-root: .
       upload-sarif: false
 
   fmt:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-fmt.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-fmt.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
 
   validate:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-validate.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-validate.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       chdir: examples/hello/stack
 
   lint:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-lint.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-lint.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       lint-path: examples/hello
       tflint-config: examples/hello/.tflint.hcl
 
   docs:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-docs.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-docs.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
       output-file: README.md
 
   security:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-security.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-security.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       scan-ref: examples/hello
       upload-sarif: false
 
   tfsec:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-tfsec.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-tfsec.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       scan-path: examples/hello
 
   checkov:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-checkov.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-checkov.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       scan-directory: examples/hello
 
   test-tidy:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       test-dir: examples/hello/test
 
   semgrep:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
 
   sonar:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-sonar.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-sonar.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       working-directory: examples/hello
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   plan-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-plan.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-plan.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   drift-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-drift.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-drift.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   apply-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-apply.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-apply.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   destroy-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-destroy.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-destroy.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   cost-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-cost.yml@main
+    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-cost.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       path: examples/hello/stack
       dry-run: true

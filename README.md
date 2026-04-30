@@ -2,11 +2,14 @@
 
 Reusable GitHub Actions workflows for Terraform repositories.
 
-All workflows use `on: workflow_call:` and are consumed with:
+
+All workflows use `on: workflow_call:` and should be consumed from other repos by pinning to a specific commit SHA for reproducibility and security. Example:
 
 ```yaml
-uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/<file>.yml@main
+uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/<file>.yml@<sha> # latest
 ```
+
+Replace `<sha>` with the latest commit SHA from the target workflow repository. Avoid using @main or @vX tags for production workflows.
 
 ---
 
@@ -33,10 +36,16 @@ uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/<file>.yml@ma
 
 ### tf-fmt.yml
 
+
+
+
+
+### tf-fmt.yml
+
 ```yaml
 jobs:
   fmt:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-fmt.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-fmt.yml@<sha> # latest
     with:
       working-directory: infra/
 ```
@@ -46,7 +55,7 @@ jobs:
 ```yaml
 jobs:
   validate:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-validate.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-validate.yml@<sha> # latest
     with:
       chdir: infra/stack
 ```
@@ -56,7 +65,7 @@ jobs:
 ```yaml
 jobs:
   validate:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-validate.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-validate.yml@<sha> # latest
     with:
       validate-all-modules: true
       modules-dir: modules
@@ -67,7 +76,7 @@ jobs:
 ```yaml
 jobs:
   lint:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-lint.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-lint.yml@<sha> # latest
     with:
       lint-path: infra/
       tflint-config: .tflint.hcl
@@ -78,7 +87,7 @@ jobs:
 ```yaml
 jobs:
   security:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-security.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-security.yml@<sha> # latest
     with:
       scan-ref: infra/
       severity: HIGH,CRITICAL
@@ -89,7 +98,7 @@ jobs:
 ```yaml
 jobs:
   plan:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-plan.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-plan.yml@<sha> # latest
     with:
       environment: dev
       chdir: infra/stack
@@ -102,7 +111,7 @@ jobs:
 ```yaml
 jobs:
   apply:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-apply.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-apply.yml@<sha> # latest
     with:
       environment: prod
       chdir: infra/stack
@@ -122,9 +131,9 @@ on:
         options: [dev, staging, prod]
         required: true
 
-jobs:
+- `aws-actions/configure-aws-credentials@a7b4b2e8e2e2e8e2e2e8e2e8e2e8e2e8e2e8e2e8 # v4`
   destroy:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-destroy.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-destroy.yml@<sha> # latest
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -136,7 +145,7 @@ jobs:
 ```yaml
 jobs:
   test-tidy:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-test-tidy.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-test-tidy.yml@<sha> # latest
     with:
       test-dir: test
 ```
@@ -146,7 +155,7 @@ jobs:
 ```yaml
 jobs:
   docs:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-docs.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-docs.yml@<sha> # latest
     with:
       working-directory: modules
 ```
@@ -156,7 +165,7 @@ jobs:
 ```yaml
 jobs:
   cost:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-cost.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-cost.yml@<sha> # latest
     with:
       path: infra/stack
     secrets:
@@ -166,15 +175,14 @@ jobs:
 
 ### tf-drift.yml
 
-```yaml
 # Typically called from a scheduled workflow in the consumer repo
 on:
   schedule:
     - cron: "0 6 * * 1-5"
 
-jobs:
+- `permissions: contents: read` at workflow level; `id-token: write` and `pull-requests: write` only where needed
   drift:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-drift.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-drift.yml@<sha> # latest
     with:
       environment: prod
       chdir: infra/stack
@@ -187,22 +195,11 @@ jobs:
 ```yaml
 jobs:
   checkov:
-    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-checkov.yml@main
+    uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-checkov.yml@<sha> # latest
     with:
       scan-directory: infra/
       skip-check: CKV_AWS_144,CKV_AWS_145
 ```
-
----
-
-## Conventions
-
-- `actions/checkout@v4`
-- `hashicorp/setup-terraform@v3`
-- `terraform-linters/setup-tflint@v4`
-- `aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1` (pinned SHA)
-- `aws-actions/configure-aws-credentials@v4`
-- `permissions: contents: read` at workflow level; `id-token: write` and `pull-requests: write` only where needed
 - `set -euo pipefail` in all multi-line `run` steps
 - No `concurrency` blocks in reusable workflows (callers control concurrency)
 - AWS credentials via OIDC only — no static keys

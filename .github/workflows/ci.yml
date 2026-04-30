@@ -172,6 +172,10 @@ jobs:
       dry-run: true
 
   drift-dry-run:
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
     uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-drift.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
     with:
       environment: dev

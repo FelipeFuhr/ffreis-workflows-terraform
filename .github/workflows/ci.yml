@@ -22,9 +22,9 @@ permissions:
 # requiring live infrastructure or secrets.
 
 jobs:
-  env:
-    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   workflows-policy:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -34,6 +34,8 @@ jobs:
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
 
   codeql-actions:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -47,6 +49,8 @@ jobs:
       upload-sarif: false
 
   fmt:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -58,6 +62,8 @@ jobs:
       working-directory: examples/hello
 
   validate:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -69,6 +75,8 @@ jobs:
       chdir: examples/hello/stack
 
   lint:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -81,6 +89,8 @@ jobs:
       tflint-config: examples/hello/.tflint.hcl
 
   docs:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -93,6 +103,8 @@ jobs:
       output-file: README.md
 
   security:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -105,6 +117,8 @@ jobs:
       upload-sarif: false
 
   tfsec:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -116,6 +130,8 @@ jobs:
       scan-path: examples/hello
 
   checkov:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -127,6 +143,8 @@ jobs:
       scan-directory: examples/hello
 
   test-tidy:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -138,6 +156,8 @@ jobs:
       test-dir: examples/hello/test
 
   semgrep:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: read
       actions: read
@@ -149,6 +169,8 @@ jobs:
       working-directory: examples/hello
 
   sonar:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
     permissions:
       contents: read
@@ -163,6 +185,8 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   plan-dry-run:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       id-token: write
       contents: read
@@ -174,6 +198,8 @@ jobs:
       dry-run: true
 
   drift-dry-run:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       id-token: write
       contents: read
@@ -185,6 +211,8 @@ jobs:
       dry-run: true
 
   apply-dry-run:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       id-token: write
       contents: read
@@ -196,6 +224,8 @@ jobs:
       dry-run: true
 
   destroy-dry-run:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       id-token: write
       contents: read
@@ -207,6 +237,8 @@ jobs:
       dry-run: true
 
   cost-dry-run:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       id-token: write
       contents: read

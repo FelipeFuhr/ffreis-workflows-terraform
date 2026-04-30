@@ -20,8 +20,6 @@
         - name: Check workflow syntax
           run: echo "Workflow syntax is valid"
     general-workflows-policy:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -30,8 +28,6 @@
         pull-requests: write
       uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
     codeql-actions:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -44,8 +40,6 @@
         source-root: .
         upload-sarif: false
     fmt:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -56,8 +50,6 @@
       with:
         working-directory: examples/hello
     validate:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -68,8 +60,6 @@
       with:
         chdir: examples/hello/stack
     lint:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -81,8 +71,6 @@
         lint-path: examples/hello
         tflint-config: examples/hello/.tflint.hcl
     docs:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -94,8 +82,6 @@
         working-directory: examples/hello
         output-file: README.md
     security:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -107,8 +93,6 @@
         scan-ref: examples/hello
         upload-sarif: false
     tfsec:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -119,8 +103,6 @@
       with:
         scan-path: examples/hello
     checkov:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -131,8 +113,6 @@
       with:
         scan-directory: examples/hello
     test-tidy:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -143,8 +123,6 @@
       with:
         test-dir: examples/hello/test
     semgrep:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         contents: read
         actions: read
@@ -155,8 +133,6 @@
       with:
         working-directory: examples/hello
     sonar:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
       permissions:
         contents: read
@@ -170,8 +146,6 @@
       secrets:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     plan-dry-run:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         id-token: write
         contents: read
@@ -182,8 +156,6 @@
         chdir: examples/hello/stack
         dry-run: true
     drift-dry-run:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         id-token: write
         contents: read
@@ -194,8 +166,6 @@
         chdir: examples/hello/stack
         dry-run: true
     apply-dry-run:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         id-token: write
         contents: read
@@ -206,8 +176,6 @@
         chdir: examples/hello/stack
         dry-run: true
     destroy-dry-run:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         id-token: write
         contents: read
@@ -218,8 +186,6 @@
         chdir: examples/hello/stack
         dry-run: true
     cost-dry-run:
-      env:
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       permissions:
         id-token: write
         contents: read
@@ -228,218 +194,3 @@
       with:
         path: examples/hello/stack
         dry-run: true
-
-  codeql-actions:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@fc5fcac8c2cfe0ccd8d18b73383df445ec31e371 # main
-    with:
-      languages: actions
-      source-root: .
-      upload-sarif: false
-
-  fmt:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-fmt.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      working-directory: examples/hello
-
-  validate:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-validate.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      chdir: examples/hello/stack
-
-  lint:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-lint.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      lint-path: examples/hello
-      tflint-config: examples/hello/.tflint.hcl
-
-  docs:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-docs.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      working-directory: examples/hello
-      output-file: README.md
-
-  security:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-security.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      scan-ref: examples/hello
-      upload-sarif: false
-
-  tfsec:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-tfsec.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      scan-path: examples/hello
-
-  checkov:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-checkov.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      scan-directory: examples/hello
-
-  test-tidy:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      test-dir: examples/hello/test
-
-  semgrep:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      working-directory: examples/hello
-
-  sonar:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-      issues: write
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-sonar.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      working-directory: examples/hello
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  plan-dry-run:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-plan.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      environment: dev
-      chdir: examples/hello/stack
-      dry-run: true
-
-  drift-dry-run:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-drift.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      environment: dev
-      chdir: examples/hello/stack
-      dry-run: true
-
-  apply-dry-run:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-apply.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      environment: dev
-      chdir: examples/hello/stack
-      dry-run: true
-
-  destroy-dry-run:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-destroy.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      environment: dev
-      chdir: examples/hello/stack
-      dry-run: true
-
-  cost-dry-run:
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-cost.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
-    with:
-      path: examples/hello/stack
-      dry-run: true

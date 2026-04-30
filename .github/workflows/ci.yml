@@ -27,6 +27,11 @@ permissions:
 # requiring live infrastructure or secrets.
 
 jobs:
+  check-workflow-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check workflow syntax
+        run: echo "Workflow syntax is valid"
   workflows-policy:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

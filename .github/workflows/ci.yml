@@ -22,6 +22,8 @@ permissions:
 # requiring live infrastructure or secrets.
 
 jobs:
+  env:
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   workflows-policy:
     permissions:
       contents: read

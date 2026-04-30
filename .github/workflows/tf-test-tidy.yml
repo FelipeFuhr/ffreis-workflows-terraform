@@ -6,7 +6,7 @@ on:
       go-version:
         description: "Go version to use"
         type: string
-        default: "1.21"
+        default: "1.25.8"
       test-dir:
         description: "Directory containing go.mod for tests"
         type: string

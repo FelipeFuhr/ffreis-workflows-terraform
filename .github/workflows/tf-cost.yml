@@ -73,7 +73,7 @@ jobs:
         run: |
           set -euo pipefail
           curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
-          echo "$HOME/.infracost/bin" >> $GITHUB_PATH
+          echo "$HOME/.infracost/bin" >> "$GITHUB_PATH"
 
       - name: Run Infracost breakdown
         if: ${{ !inputs.dry-run }}

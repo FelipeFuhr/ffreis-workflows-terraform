@@ -159,6 +159,8 @@ jobs:
       working-directory: examples/hello
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  plan-dry-run:
     permissions:
       id-token: write
       contents: read

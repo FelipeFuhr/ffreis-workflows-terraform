@@ -37,7 +37,16 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
 
-      - name: Setup Infracost
+
+      # Always install infracost CLI and add to PATH, regardless of setup action
+      - name: Install Infracost CLI
+        if: ${{ !inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+          echo "$HOME/.infracost/bin" >> "$GITHUB_PATH"
+
+      - name: Setup Infracost (action, optional)
         if: ${{ !inputs.dry-run }}
         uses: infracost/actions/setup@d51fc54d23c9ad90f984b884257bd96dc2625067 # v4.1.0
         with:

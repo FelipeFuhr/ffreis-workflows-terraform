@@ -1,3 +1,6 @@
+# Code scanning false positive ignore: SonarQube Docs API Key
+# The following SHA references are not secrets, but workflow version pins for tf-sonar.yml reusable workflow.
+# See: https://sg.run/x10P
 
 
   name: CI

@@ -103,6 +103,8 @@ jobs:
     with:
       working-directory: examples/hello
 
+  # code scanning false positive ignore: SonarQube Docs API Key
+  # The following SHA reference is not a secret, but a workflow version pin for tf-sonar.yml reusable workflow.
   sonar:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
     permissions:

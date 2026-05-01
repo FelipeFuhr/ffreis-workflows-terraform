@@ -1,6 +1,5 @@
 # Code scanning false positive ignore: SonarQube Docs API Key
 # The following SHA references are not secrets, but workflow version pins for tf-sonar.yml reusable workflow.
-# See: https://sg.run/x10P
 
 
   name: CI
@@ -125,6 +124,7 @@
       uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
       with:
         test-dir: examples/hello/test
+        go-version: "1.25.8"
     semgrep:
       permissions:
         contents: read
@@ -135,6 +135,8 @@
       uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@ff8eb93a653fee48091619bb9ec88abafa8d4cd5 # main
       with:
         working-directory: examples/hello
+    # code scanning false positive ignore: SonarQube Docs API Key
+    # The following SHA reference is not a secret, but a workflow version pin for tf-sonar.yml reusable workflow.
     sonar:
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
       permissions:

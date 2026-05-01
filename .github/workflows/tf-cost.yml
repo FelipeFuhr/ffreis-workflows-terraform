@@ -38,9 +38,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
 
 
-      # Always install infracost CLI and add to PATH, regardless of setup action
+
+      # Always install infracost CLI and add to PATH, regardless of dry-run
       - name: Install Infracost CLI
-        if: ${{ !inputs.dry-run }}
         run: |
           set -euo pipefail
           curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh

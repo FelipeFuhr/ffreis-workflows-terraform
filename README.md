@@ -36,12 +36,6 @@ Replace `<sha>` with the latest commit SHA from the target workflow repository. 
 
 ### tf-fmt.yml
 
-
-
-
-
-### tf-fmt.yml
-
 ```yaml
 jobs:
   fmt:
@@ -131,7 +125,7 @@ on:
         options: [dev, staging, prod]
         required: true
 
-- `aws-actions/configure-aws-credentials@a7b4b2e8e2e2e8e2e2e8e2e8e2e8e2e8e2e8e2e8 # v4`
+jobs:
   destroy:
     uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-destroy.yml@<sha> # latest
     with:
@@ -175,12 +169,13 @@ jobs:
 
 ### tf-drift.yml
 
+```yaml
 # Typically called from a scheduled workflow in the consumer repo
 on:
   schedule:
     - cron: "0 6 * * 1-5"
 
-- `permissions: contents: read` at workflow level; `id-token: write` and `pull-requests: write` only where needed
+jobs:
   drift:
     uses: ffreis/ffreis-platform-workflows-terraform/.github/workflows/tf-drift.yml@<sha> # latest
     with:

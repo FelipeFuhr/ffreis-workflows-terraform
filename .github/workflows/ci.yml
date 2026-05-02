@@ -12,8 +12,6 @@
     contents: read
     actions: read
     security-events: write
-    issues: write
-    pull-requests: write
 
   jobs:
     check-workflow-syntax:
@@ -26,16 +24,12 @@
         contents: read
         actions: read
         security-events: write
-        issues: write
-        pull-requests: write
       uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@a02d736d25fa99fca8b4b623af9467d7afc472a4 # v1.0.3
     codeql-actions:
       permissions:
         contents: read
         actions: read
         security-events: write
-        issues: write
-        pull-requests: write
       uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@a02d736d25fa99fca8b4b623af9467d7afc472a4 # v1.0.3
       with:
         languages: actions
@@ -44,30 +38,18 @@
     fmt:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-fmt.yml
       with:
         working-directory: examples/hello
     validate:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-validate.yml
       with:
         chdir: examples/hello/stack
     lint:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-lint.yml
       with:
         lint-path: examples/hello
@@ -75,10 +57,6 @@
     docs:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-docs.yml
       with:
         working-directory: examples/hello
@@ -86,10 +64,6 @@
     security:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-security.yml
       with:
         scan-ref: examples/hello
@@ -97,30 +71,18 @@
     tfsec:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-tfsec.yml
       with:
         scan-path: examples/hello
     checkov:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-checkov.yml
       with:
         scan-directory: examples/hello
     test-tidy:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-test-tidy.yml
       with:
         test-dir: examples/hello/test
@@ -128,10 +90,6 @@
     semgrep:
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-semgrep.yml
       with:
         working-directory: examples/hello
@@ -141,10 +99,6 @@
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
       permissions:
         contents: read
-        actions: read
-        security-events: write
-        issues: write
-        pull-requests: write
       uses: ./.github/workflows/tf-sonar.yml
       with:
         working-directory: examples/hello
@@ -164,7 +118,6 @@
       permissions:
         id-token: write
         contents: read
-        pull-requests: write
       uses: ./.github/workflows/tf-drift.yml
       with:
         environment: dev
@@ -174,7 +127,6 @@
       permissions:
         id-token: write
         contents: read
-        pull-requests: write
       uses: ./.github/workflows/tf-apply.yml
       with:
         environment: dev
@@ -184,7 +136,6 @@
       permissions:
         id-token: write
         contents: read
-        pull-requests: write
       uses: ./.github/workflows/tf-destroy.yml
       with:
         environment: dev

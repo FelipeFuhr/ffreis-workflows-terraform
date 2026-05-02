@@ -37,21 +37,14 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
 
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@a7b7b6e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2 # v4.0.0 (replace with actual latest v4 SHA)
+        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
         with:
           terraform_version: ${{ inputs.terraform-version }}
 
-      # Always install infracost CLI and add to PATH, regardless of dry-run
-      - name: Install Infracost CLI
-        run: |
-          set -euo pipefail
-          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
-          echo "$HOME/.infracost/bin" >> "$GITHUB_PATH"
-
-      - name: Setup Infracost (action, optional)
+      - name: Setup Infracost
         if: ${{ !inputs.dry-run }}
         uses: infracost/actions/setup@d51fc54d23c9ad90f984b884257bd96dc2625067 # v4.1.0
         with:
@@ -81,13 +74,6 @@ jobs:
           aws-region: ${{ inputs.aws-region }}
           role-session-name: github-${{ github.run_id }}-infracost
 
-
-      - name: Install Infracost CLI (manual fallback)
-        if: ${{ !inputs.dry-run }}
-        run: |
-          set -euo pipefail
-          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
-          echo "$HOME/.infracost/bin" >> "$GITHUB_PATH"
 
       - name: Run Infracost breakdown
         if: ${{ !inputs.dry-run }}

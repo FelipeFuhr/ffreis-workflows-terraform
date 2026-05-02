@@ -8,8 +8,6 @@ permissions:
   contents: read
   actions: read
   security-events: write
-  issues: write
-  pull-requests: write
 
 # Validates the static-analysis and security workflows against examples/hello/.
 #

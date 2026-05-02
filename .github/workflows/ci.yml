@@ -48,7 +48,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-fmt.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-fmt.yml
       with:
         working-directory: examples/hello
     validate:
@@ -58,7 +58,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-validate.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-validate.yml
       with:
         chdir: examples/hello/stack
     lint:
@@ -68,7 +68,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-lint.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-lint.yml
       with:
         lint-path: examples/hello
         tflint-config: examples/hello/.tflint.hcl
@@ -79,7 +79,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-docs.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-docs.yml
       with:
         working-directory: examples/hello
         output-file: README.md
@@ -90,7 +90,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-security.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-security.yml
       with:
         scan-ref: examples/hello
         upload-sarif: false
@@ -101,7 +101,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-tfsec.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-tfsec.yml
       with:
         scan-path: examples/hello
     checkov:
@@ -111,7 +111,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-checkov.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-checkov.yml
       with:
         scan-directory: examples/hello
     test-tidy:
@@ -121,7 +121,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-test-tidy.yml
       with:
         test-dir: examples/hello/test
         go-version: "1.25.8"
@@ -132,7 +132,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-semgrep.yml
       with:
         working-directory: examples/hello
     # code scanning false positive ignore: SonarQube Docs API Key
@@ -145,7 +145,7 @@
         security-events: write
         issues: write
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-sonar.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-sonar.yml
       with:
         working-directory: examples/hello
       secrets:
@@ -155,7 +155,7 @@
         id-token: write
         contents: read
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-plan.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-plan.yml
       with:
         environment: dev
         chdir: examples/hello/stack
@@ -165,7 +165,7 @@
         id-token: write
         contents: read
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-drift.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-drift.yml
       with:
         environment: dev
         chdir: examples/hello/stack
@@ -175,7 +175,7 @@
         id-token: write
         contents: read
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-apply.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-apply.yml
       with:
         environment: dev
         chdir: examples/hello/stack
@@ -185,7 +185,7 @@
         id-token: write
         contents: read
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-destroy.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-destroy.yml
       with:
         environment: dev
         chdir: examples/hello/stack
@@ -195,7 +195,7 @@
         id-token: write
         contents: read
         pull-requests: write
-      uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-cost.yml@main # NOSONAR: self-referential — pinning to a SHA creates a bootstrap cycle
+      uses: ./.github/workflows/tf-cost.yml
       with:
         path: examples/hello/stack
         dry-run: true

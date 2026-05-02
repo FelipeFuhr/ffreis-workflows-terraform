@@ -20,102 +20,141 @@ permissions:
 # requiring live infrastructure or secrets.
 
 jobs:
+
   workflows-policy:
-    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@main
+    permissions:
+      contents: read
+    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@a02d736d25fa99fca8b4b623af9467d7afc472a4 # v1.0.3
 
   codeql-actions:
-    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@main
+    permissions:
+      contents: read
+    uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@a02d736d25fa99fca8b4b623af9467d7afc472a4 # v1.0.3
     with:
       languages: actions
       source-root: .
       upload-sarif: false
 
   fmt:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-fmt.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-fmt.yml
     with:
       working-directory: examples/hello
 
   validate:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-validate.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-validate.yml
     with:
       chdir: examples/hello/stack
 
   lint:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-lint.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-lint.yml
     with:
       lint-path: examples/hello
       tflint-config: examples/hello/.tflint.hcl
 
   docs:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-docs.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-docs.yml
     with:
       working-directory: examples/hello
       output-file: README.md
 
   security:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-security.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-security.yml
     with:
       scan-ref: examples/hello
       upload-sarif: false
 
   tfsec:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-tfsec.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-tfsec.yml
     with:
       scan-path: examples/hello
 
   checkov:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-checkov.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-checkov.yml
     with:
       scan-directory: examples/hello
 
   test-tidy:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-test-tidy.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-test-tidy.yml
     with:
       test-dir: examples/hello/test
 
   semgrep:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-semgrep.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-semgrep.yml
     with:
       working-directory: examples/hello
 
+  # code scanning false positive ignore: SonarQube Docs API Key
+  # The following SHA reference is not a secret, but a workflow version pin for tf-sonar.yml reusable workflow.
   sonar:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-sonar.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-sonar.yml
     with:
       working-directory: examples/hello
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   plan-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-plan.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    uses: ./.github/workflows/tf-plan.yml
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   drift-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-drift.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-drift.yml
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   apply-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-apply.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-apply.yml
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   destroy-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-destroy.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-destroy.yml
     with:
       environment: dev
       chdir: examples/hello/stack
       dry-run: true
 
   cost-dry-run:
-    uses: FelipeFuhr/ffreis-workflows-terraform/.github/workflows/tf-cost.yml@main
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tf-cost.yml
     with:
       path: examples/hello/stack
       dry-run: true

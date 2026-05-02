@@ -35,7 +35,14 @@ jobs:
     name: Cost estimation (infracost)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
+        with:
+          terraform_version: ${{ inputs.terraform-version }}
 
       - name: Setup Infracost
         if: ${{ !inputs.dry-run }}
@@ -66,6 +73,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ inputs.aws-region }}
           role-session-name: github-${{ github.run_id }}-infracost
+
 
       - name: Run Infracost breakdown
         if: ${{ !inputs.dry-run }}

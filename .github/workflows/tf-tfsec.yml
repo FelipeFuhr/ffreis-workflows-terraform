@@ -7,10 +7,6 @@ on:
         description: "Directory to scan, e.g. 'infra/' or '.'"
         type: string
         default: "."
-      minimum-severity:
-        description: "Minimum severity level to report (CRITICAL, HIGH, MEDIUM, LOW)"
-        type: string
-        default: "HIGH"
       soft-fail:
         description: "Exit 0 even when findings are present (useful during ramp-up)"
         type: boolean
@@ -30,5 +26,4 @@ jobs:
         uses: aquasecurity/tfsec-action@b466648d6e39e7c75324f25d83891162a721f2d6 # v1.0.3
         with:
           working_directory: ${{ inputs.scan-path }}
-          minimum_severity: ${{ inputs.minimum-severity }}
           soft_fail: ${{ inputs.soft-fail }}

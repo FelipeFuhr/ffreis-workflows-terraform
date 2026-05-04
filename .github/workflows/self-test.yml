@@ -70,6 +70,8 @@ jobs:
   security:
     permissions:
       contents: read
+      actions: read
+      security-events: write
     uses: ./.github/workflows/tf-security.yml
     with:
       scan-ref: examples/hello
@@ -129,6 +131,7 @@ jobs:
   drift-dry-run:
     permissions:
       contents: read
+      id-token: write
     uses: ./.github/workflows/tf-drift.yml
     with:
       environment: dev
@@ -138,6 +141,9 @@ jobs:
   apply-dry-run:
     permissions:
       contents: read
+      id-token: write
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/tf-apply.yml
     with:
       environment: dev
@@ -147,6 +153,9 @@ jobs:
   destroy-dry-run:
     permissions:
       contents: read
+      id-token: write
+      issues: write
+      pull-requests: write
     uses: ./.github/workflows/tf-destroy.yml
     with:
       environment: dev
@@ -156,6 +165,8 @@ jobs:
   cost-dry-run:
     permissions:
       contents: read
+      id-token: write
+      pull-requests: write
     uses: ./.github/workflows/tf-cost.yml
     with:
       path: examples/hello/stack

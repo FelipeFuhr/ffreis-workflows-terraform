@@ -50,6 +50,27 @@ make secrets-scan-staged
 Consumed by all Terraform stacks (platform-org, shared-infra, flemming-infra,
 platform-github-oidc, platform-atlantis). They pin to a full commit SHA.
 
+## lefthook / platform-standards
+
+- `lefthook.yml` uses a `remotes:` block pointing to
+  `https://github.com/FelipeFuhr/ffreis-platform-standards`.
+- The `ref:` must be a **full commit SHA** — never `ref: main`. Renovate manages
+  this pin. When updating manually, fetch the latest SHA with:
+  `gh api repos/FelipeFuhr/ffreis-platform-standards/commits/main --jq '.sha'`
+- Local overrides in `lefthook.yml` (fmt-check glob, secret-scan, actionlint,
+  commit-msg) augment the remote base; they are not duplicated by the remote.
+
+## Action SHA management
+
+- All third-party action SHAs are managed by Renovate (not Dependabot).
+- `tf-fmt`, `tf-lint`, `tf-validate`, `tf-cost` include a
+  `step-security/harden-runner` step (egress-policy: audit) from StepSecurity.
+- `ci.yml` caller jobs need `issues: write` + `pull-requests: write` + `actions: read`
+  + `security-events: write` in addition to `contents: read` when calling reusable
+  workflows that post PR comments or upload SARIF.
+- `self-test.yml` dry-run jobs (drift, apply, destroy, cost) need `id-token: write`
+  even in dry-run mode so the workflow wiring is validated.
+
 ## Keeping this file current
 
 - **If you discover a fact not reflected here:** add it before finishing your task.

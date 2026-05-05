@@ -1,16 +1,13 @@
-# lefthook.yml — Terraform quality hooks
-# pre-commit: fast (<20 s) — fmt check + hygiene + secrets
-# pre-push:   deeper (<90 s) — actionlint on workflows + tflint on examples
+remotes:
+  - git_url: https://github.com/FelipeFuhr/ffreis-platform-standards
+    ref: 9fbd862e5af0da06f98252a44c5f7e66e2fdd9cc
+    configs:
+      - lefthook/base.yml
+      - lefthook/actionlint.yml
 
+# fmt-check targets examples/ only — overrides the terraform.yml default
 pre-commit:
-  parallel: true
   commands:
-    hygiene-merge-markers:
-      run: ./scripts/hooks/check_merge_markers.sh
-    hygiene-large-files:
-      run: ./scripts/hooks/check_large_files.sh
-    hygiene-binary-files:
-      run: ./scripts/hooks/check_binary_files.sh
     fmt-check:
       glob: "examples/**/*.tf"
       run: make fmt-check

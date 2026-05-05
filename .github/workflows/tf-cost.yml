@@ -79,7 +79,6 @@ jobs:
           aws-region: ${{ inputs.aws-region }}
           role-session-name: github-${{ github.run_id }}-infracost
 
-
       - name: Run Infracost breakdown
         if: ${{ !inputs.dry-run }}
         env:

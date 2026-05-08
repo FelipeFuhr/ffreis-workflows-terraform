@@ -21,6 +21,10 @@ permissions:
 # `dry-run: true` mode so the workflow wiring is continuously validated without
 # requiring live infrastructure or secrets.
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   workflows-policy:

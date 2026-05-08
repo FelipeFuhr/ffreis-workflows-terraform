@@ -47,8 +47,8 @@ make secrets-scan-staged
 
 ## Cross-repo role
 
-Consumed by all Terraform stacks (platform-org, shared-infra, flemming-infra,
-platform-github-oidc, platform-atlantis). They pin to a full commit SHA.
+Consumed by all managed Terraform stacks (both public and private — do not
+enumerate private stack names in PR descriptions). They pin to a full commit SHA.
 
 ## lefthook / platform-standards
 
@@ -70,6 +70,14 @@ platform-github-oidc, platform-atlantis). They pin to a full commit SHA.
   workflows that post PR comments or upload SARIF.
 - `self-test.yml` dry-run jobs (drift, apply, destroy, cost) need `id-token: write`
   even in dry-run mode so the workflow wiring is validated.
+
+## Public repo — private-repo hygiene
+
+This is a **public** GitHub repository. When writing commit messages, PR titles,
+PR descriptions, or any other user-visible text, **never name private repos** —
+website content, inventory, infra, Lambda, or data repos that are not publicly
+listed. Use generic terms instead: "the fleet inventory", "a private consumer",
+"internal infra", "private data repo", etc.
 
 ## Keeping this file current
 

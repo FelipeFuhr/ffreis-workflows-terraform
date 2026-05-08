@@ -24,7 +24,6 @@
         - name: Check workflow syntax
           run: echo "Workflow syntax is valid"
     general-workflows-policy:
-      timeout-minutes: 15
       permissions:
         contents: read
         actions: read
@@ -33,7 +32,6 @@
         pull-requests: write
       uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@01e2b12e992621fecf074b8a202f66044196f3bf # v1.0.4
     codeql-actions:
-      timeout-minutes: 30
       permissions:
         contents: read
         actions: read
@@ -46,7 +44,6 @@
         source-root: .
         upload-sarif: false
     fmt:
-      timeout-minutes: 15
       permissions:
         contents: read
         actions: read
@@ -57,7 +54,6 @@
       with:
         working-directory: examples/hello
     validate:
-      timeout-minutes: 15
       permissions:
         contents: read
         actions: read
@@ -68,7 +64,6 @@
       with:
         chdir: examples/hello/stack
     lint:
-      timeout-minutes: 15
       permissions:
         contents: read
         actions: read
@@ -80,7 +75,6 @@
         lint-path: examples/hello
         tflint-config: examples/hello/.tflint.hcl
     docs:
-      timeout-minutes: 15
       permissions:
         contents: read
         actions: read
@@ -92,7 +86,6 @@
         working-directory: examples/hello
         output-file: README.md
     security:
-      timeout-minutes: 30
       permissions:
         contents: read
         actions: read
@@ -104,7 +97,6 @@
         scan-ref: examples/hello
         upload-sarif: false
     tfsec:
-      timeout-minutes: 30
       permissions:
         contents: read
         actions: read
@@ -115,7 +107,6 @@
       with:
         scan-path: examples/hello
     checkov:
-      timeout-minutes: 30
       permissions:
         contents: read
         actions: read
@@ -126,7 +117,6 @@
       with:
         scan-directory: examples/hello
     test-tidy:
-      timeout-minutes: 30
       permissions:
         contents: read
         actions: read
@@ -138,7 +128,6 @@
         test-dir: examples/hello/test
         go-version: "1.25.8"
     semgrep:
-      timeout-minutes: 30
       permissions:
         contents: read
         actions: read
@@ -151,7 +140,6 @@
     # code scanning false positive ignore: SonarQube Docs API Key
     # The following SHA reference is not a secret, but a workflow version pin for tf-sonar.yml reusable workflow.
     sonar:
-      timeout-minutes: 30
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
       permissions:
         contents: read
@@ -165,7 +153,6 @@
       secrets:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     plan-dry-run:
-      timeout-minutes: 30
       permissions:
         id-token: write
         contents: read
@@ -176,7 +163,6 @@
         chdir: examples/hello/stack
         dry-run: true
     drift-dry-run:
-      timeout-minutes: 30
       permissions:
         id-token: write
         contents: read
@@ -187,7 +173,6 @@
         chdir: examples/hello/stack
         dry-run: true
     apply-dry-run:
-      timeout-minutes: 30
       permissions:
         id-token: write
         contents: read
@@ -198,7 +183,6 @@
         chdir: examples/hello/stack
         dry-run: true
     destroy-dry-run:
-      timeout-minutes: 30
       permissions:
         id-token: write
         contents: read
@@ -209,7 +193,6 @@
         chdir: examples/hello/stack
         dry-run: true
     cost-dry-run:
-      timeout-minutes: 30
       permissions:
         id-token: write
         contents: read

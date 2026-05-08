@@ -28,11 +28,13 @@ concurrency:
 jobs:
 
   workflows-policy:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@01e2b12e992621fecf074b8a202f66044196f3bf # v1.0.4
 
   codeql-actions:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-codeql.yml@01e2b12e992621fecf074b8a202f66044196f3bf # v1.0.4
@@ -42,6 +44,7 @@ jobs:
       upload-sarif: false
 
   fmt:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-fmt.yml
@@ -49,6 +52,7 @@ jobs:
       working-directory: examples/hello
 
   validate:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-validate.yml
@@ -56,6 +60,7 @@ jobs:
       chdir: examples/hello/stack
 
   lint:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-lint.yml
@@ -64,6 +69,7 @@ jobs:
       tflint-config: examples/hello/.tflint.hcl
 
   docs:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-docs.yml
@@ -72,6 +78,7 @@ jobs:
       output-file: README.md
 
   security:
+    timeout-minutes: 30
     permissions:
       contents: read
       actions: read
@@ -82,6 +89,7 @@ jobs:
       upload-sarif: false
 
   tfsec:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-tfsec.yml
@@ -89,6 +97,7 @@ jobs:
       scan-path: examples/hello
 
   checkov:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-checkov.yml
@@ -96,6 +105,7 @@ jobs:
       scan-directory: examples/hello
 
   test-tidy:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-test-tidy.yml
@@ -103,6 +113,7 @@ jobs:
       test-dir: examples/hello/test
 
   semgrep:
+    timeout-minutes: 30
     permissions:
       contents: read
     uses: ./.github/workflows/tf-semgrep.yml
@@ -112,6 +123,7 @@ jobs:
   # code scanning false positive ignore: SonarQube Docs API Key
   # The following SHA reference is not a secret, but a workflow version pin for tf-sonar.yml reusable workflow.
   sonar:
+    timeout-minutes: 30
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
     permissions:
       contents: read
@@ -122,6 +134,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   plan-dry-run:
+    timeout-minutes: 30
     permissions:
       contents: read
       pull-requests: write
@@ -133,6 +146,7 @@ jobs:
       dry-run: true
 
   drift-dry-run:
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -143,6 +157,7 @@ jobs:
       dry-run: true
 
   apply-dry-run:
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -155,6 +170,7 @@ jobs:
       dry-run: true
 
   destroy-dry-run:
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -167,6 +183,7 @@ jobs:
       dry-run: true
 
   cost-dry-run:
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write

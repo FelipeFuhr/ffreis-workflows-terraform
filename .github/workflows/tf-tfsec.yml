@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   tfsec:
+    timeout-minutes: 15
     name: Security (tfsec)
     runs-on: ubuntu-latest
     steps:

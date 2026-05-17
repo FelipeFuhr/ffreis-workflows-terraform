@@ -32,6 +32,7 @@ permissions:
 
 jobs:
   cost:
+    timeout-minutes: 15
     name: Cost estimation (infracost)
     runs-on: ubuntu-latest
     steps:

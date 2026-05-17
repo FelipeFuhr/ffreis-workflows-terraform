@@ -21,6 +21,7 @@ permissions:
 
 jobs:
   lint:
+    timeout-minutes: 15
     name: Lint (tflint)
     runs-on: ubuntu-latest
     steps:

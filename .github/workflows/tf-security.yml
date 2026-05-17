@@ -27,6 +27,7 @@ permissions:
 
 jobs:
   security:
+    timeout-minutes: 30
     name: Security (trivy)
     runs-on: ubuntu-latest
     steps:

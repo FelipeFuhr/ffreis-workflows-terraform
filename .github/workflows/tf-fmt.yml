@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   fmt:
+    timeout-minutes: 15
     name: Format (terraform fmt)
     runs-on: ubuntu-latest
     steps:

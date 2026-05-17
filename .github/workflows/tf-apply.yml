@@ -39,6 +39,7 @@ permissions:
 
 jobs:
   apply:
+    timeout-minutes: 15
     name: Apply (${{ inputs.environment }})
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}

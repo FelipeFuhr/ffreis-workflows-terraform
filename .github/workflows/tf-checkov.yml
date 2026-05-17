@@ -29,6 +29,7 @@ permissions:
 
 jobs:
   checkov:
+    timeout-minutes: 15
     name: Compliance scan (checkov)
     runs-on: ubuntu-latest
     steps:

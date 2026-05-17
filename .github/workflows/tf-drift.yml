@@ -33,6 +33,7 @@ permissions:
 
 jobs:
   drift:
+    timeout-minutes: 15
     name: Drift detection (${{ inputs.environment }})
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}

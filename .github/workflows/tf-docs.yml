@@ -25,6 +25,7 @@ permissions:
 
 jobs:
   docs:
+    timeout-minutes: 15
     name: Docs drift check (terraform-docs)
     runs-on: ubuntu-latest
     steps:

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.0...v1.1.1) (2026-05-24)
+
+
+### Bug Fixes
+
+* **ci:** drop misplaced timeout-minutes from pull_request trigger ([#37](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/37)) ([2d19e43](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/2d19e43ba77694bbe17c4cff3efd41e7baf52852))
+
 ## [1.1.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.0.0...v1.1.0) (2026-05-21)
 
 

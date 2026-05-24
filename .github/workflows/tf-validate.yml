@@ -20,13 +20,12 @@ on:
         type: string
         default: "modules"
 
-permissions:
-  contents: read
-
 jobs:
   validate:
     timeout-minutes: 15
     name: Validate (terraform validate)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

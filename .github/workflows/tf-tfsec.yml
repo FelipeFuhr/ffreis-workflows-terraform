@@ -12,13 +12,12 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: read
-
 jobs:
   tfsec:
     timeout-minutes: 15
     name: Security (tfsec)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

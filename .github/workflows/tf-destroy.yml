@@ -35,16 +35,13 @@ on:
       AWS_ROLE_ARN:
         required: false
 
-permissions:
-  id-token: write
-  contents: read
-  issues: write
-  pull-requests: write
-
 jobs:
   destroy:
     timeout-minutes: 15
     name: Destroy (${{ inputs.environment }})
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:

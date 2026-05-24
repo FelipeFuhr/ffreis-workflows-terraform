@@ -4,13 +4,6 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: read
-  actions: read
-  security-events: write
-  issues: write
-  pull-requests: write
-
 # Validates the static-analysis and security workflows against examples/hello/.
 #
 # tf-sonar requires SONAR_TOKEN to be configured in the repository. The job
@@ -146,8 +139,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      issues: write
-      pull-requests: write
     uses: ./.github/workflows/tf-apply.yml
     with:
       environment: dev
@@ -158,8 +149,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      issues: write
-      pull-requests: write
     uses: ./.github/workflows/tf-destroy.yml
     with:
       environment: dev

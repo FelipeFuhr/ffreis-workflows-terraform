@@ -12,13 +12,12 @@ on:
         type: string
         default: "."
 
-permissions:
-  contents: read
-
 jobs:
   fmt:
     timeout-minutes: 15
     name: Format (terraform fmt)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

@@ -20,13 +20,12 @@ on:
         type: string
         default: "inject"
 
-permissions:
-  contents: read
-
 jobs:
   docs:
     timeout-minutes: 15
     name: Docs drift check (terraform-docs)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

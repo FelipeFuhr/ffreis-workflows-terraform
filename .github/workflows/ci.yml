@@ -6,7 +6,6 @@
 
   on:
     pull_request:
-      timeout-minutes: 15
       branches: [main]
 
   permissions:

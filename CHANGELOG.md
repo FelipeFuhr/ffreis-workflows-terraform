@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.0.0...v1.1.0) (2026-05-21)
+
+
+### Features
+
+* migrate to platform standards ([#34](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/34)) ([31553f7](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/31553f79a82aeb57b1bea533f322014ccb449eb2))
+
 ## 1.0.0 (2026-05-06)
 
 

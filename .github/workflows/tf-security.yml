@@ -20,15 +20,14 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: read
-  actions: read
-  security-events: write
-
 jobs:
   security:
     timeout-minutes: 30
     name: Security (trivy)
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

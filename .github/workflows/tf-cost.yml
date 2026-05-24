@@ -25,15 +25,14 @@ on:
       AWS_ROLE_ARN:
         required: false
 
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-
 jobs:
   cost:
     timeout-minutes: 15
     name: Cost estimation (infracost)
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
 

@@ -24,13 +24,12 @@ on:
         type: string
         default: ""
 
-permissions:
-  contents: read
-
 jobs:
   checkov:
     timeout-minutes: 15
     name: Compliance scan (checkov)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

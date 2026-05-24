@@ -16,13 +16,12 @@ on:
         type: string
         default: ".tflint.hcl"
 
-permissions:
-  contents: read
-
 jobs:
   lint:
     timeout-minutes: 15
     name: Lint (tflint)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)

@@ -27,14 +27,13 @@ on:
       AWS_ROLE_ARN:
         required: false
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   drift:
     timeout-minutes: 15
     name: Drift detection (${{ inputs.environment }})
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:

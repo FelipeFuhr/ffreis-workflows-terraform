@@ -19,6 +19,11 @@ on:
         description: "If true, validates configuration without requiring Infracost/AWS credentials"
         type: boolean
         default: false
+      run_on_draft:
+        description: "Run even on draft PRs (default: skip on draft to save CI minutes)"
+        required: false
+        type: boolean
+        default: false
     secrets:
       INFRACOST_API_KEY:
         required: false
@@ -27,6 +32,7 @@ on:
 
 jobs:
   cost:
+    if: ${{ inputs.run_on_draft || vars.CI_RUN_ON_DRAFT == 'true' || github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     timeout-minutes: 15
     name: Cost estimation (infracost)
     permissions:

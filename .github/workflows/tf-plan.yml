@@ -27,6 +27,11 @@ on:
         description: "If true, validates configuration without requiring AWS credentials/state"
         type: boolean
         default: false
+      run_on_draft:
+        description: "Run even on draft PRs (default: skip on draft to save CI minutes)"
+        required: false
+        type: boolean
+        default: false
     secrets:
       AWS_ROLE_ARN:
         required: false
@@ -37,6 +42,7 @@ on:
 
 jobs:
   plan:
+    if: ${{ inputs.run_on_draft || vars.CI_RUN_ON_DRAFT == 'true' || github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     timeout-minutes: 15
     name: Plan (${{ inputs.environment }})
     permissions:

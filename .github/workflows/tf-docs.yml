@@ -80,8 +80,15 @@ jobs:
       - name: Fail if docs are stale
         run: |
           set -euo pipefail
+          # Intent-to-add untracked files so a module with NO committed README
+          # (a brand-new generated file) is caught too. `git diff --exit-code`
+          # alone ignores untracked files, so a module missing its docs entirely
+          # would otherwise pass silently — only edits to already-tracked
+          # READMEs were ever validated.
+          git add -AN
           git diff --exit-code || {
             echo ""
-            echo "terraform-docs output has changed. Run terraform-docs locally and commit the updated docs."
+            echo "terraform-docs output has changed, or a module is missing a committed README.md."
+            echo "Run terraform-docs locally and commit the generated README.md files."
             exit 1
           }

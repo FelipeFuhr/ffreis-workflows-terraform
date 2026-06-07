@@ -61,6 +61,18 @@ jobs:
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
+      - name: Verify Infracost binary integrity
+        if: ${{ !inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          INFRACOST_VERSION="$(infracost --version 2>&1 | awk '{print $NF}')"
+          CHECKSUMS_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz.sha256"
+          EXPECTED_SHA="$(curl -fsSL "${CHECKSUMS_URL}" | awk '{print $1}')"
+          ARCHIVE_PATH="$(mktemp)"
+          curl -fsSL "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz" -o "${ARCHIVE_PATH}"
+          echo "${EXPECTED_SHA}  ${ARCHIVE_PATH}" | sha256sum --check --status
+          echo "Infracost ${INFRACOST_VERSION} binary integrity verified."
+
       - name: Require INFRACOST_API_KEY and AWS_ROLE_ARN (when dry-run=false)
         if: ${{ !inputs.dry-run }}
         env:

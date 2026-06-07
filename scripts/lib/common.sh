@@ -18,7 +18,6 @@ common_info() {
 
 common_die() {
   common_err "$@"
-  exit 1
   return 1
 }
 
@@ -26,7 +25,7 @@ common_require_git_repo() {
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     return 0
   fi
-  common_die "This hook must run inside a Git repository."
+  common_die "This hook must run inside a Git repository." || exit 1
 }
 
 common_is_allowlisted_path() {
@@ -59,5 +58,5 @@ common_require_file() {
     return 0
   fi
 
-  common_die "$message"
+  common_die "$message" || exit 1
 }

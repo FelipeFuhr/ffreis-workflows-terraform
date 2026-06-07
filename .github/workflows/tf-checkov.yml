@@ -50,7 +50,7 @@ jobs:
           CHECKOV_VERSION: ${{ inputs.checkov-version }}
         run: |
           set -euo pipefail
-          pip install "checkov==${CHECKOV_VERSION}"
+          pip install --only-binary=:all: "checkov==${CHECKOV_VERSION}"
 
       - name: Run Checkov (with soft-fail, with skip-check)
         if: ${{ inputs.soft-fail && inputs.skip-check != '' }}

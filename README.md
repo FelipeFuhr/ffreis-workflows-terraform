@@ -1,5 +1,9 @@
 # ffreis-platform-workflows-terraform
 
+<!-- ffreis-badges:start -->
+[![CI](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/FelipeFuhr/ffreis-badges/main/badges/ffreis-workflows-terraform/ci.json)](https://github.com/FelipeFuhr/ffreis-workflows-terraform/actions) [![Latest version](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/FelipeFuhr/ffreis-badges/main/badges/ffreis-workflows-terraform/version.json)](https://github.com/FelipeFuhr/ffreis-workflows-terraform/releases) [![License](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/FelipeFuhr/ffreis-badges/main/badges/ffreis-workflows-terraform/license.json)](https://github.com/FelipeFuhr/ffreis-workflows-terraform/blob/main/LICENSE)
+<!-- ffreis-badges:end -->
+
 Reusable GitHub Actions workflows for Terraform repositories.
 
 

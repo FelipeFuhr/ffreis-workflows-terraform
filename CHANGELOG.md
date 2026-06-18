@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.2](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.1...v1.1.2) (2026-06-15)
+
+
+### Bug Fixes
+
+* **grype:** bump workflows-general SHA to prevent self-scan CVEs ([#50](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/50)) ([5553d05](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/5553d05bf3ae6a5655a275107be37183771c5b55))
+* resolve SonarQube issues ([#53](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/53)) ([6867fad](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/6867fad38f25e4db9dc4d5cd0f19c99a96bb719a))
+* **tf-docs:** fail drift check on modules missing a committed README ([#44](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/44)) ([0afe17e](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/0afe17e8e6bf217cb78280462b6187050476324f))
+
 ## [1.1.1](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.0...v1.1.1) (2026-05-24)
 
 

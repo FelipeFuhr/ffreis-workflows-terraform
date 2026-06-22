@@ -3,10 +3,6 @@ name: Terraform Compliance Scan (Checkov)
 on:
   workflow_call:
     inputs:
-      checkov-version:
-        description: "Checkov version to install"
-        type: string
-        default: "3.2.0"
       scan-directory:
         description: "Directory to scan"
         type: string
@@ -47,10 +43,16 @@ jobs:
 
       - name: Install Checkov
         env:
-          CHECKOV_VERSION: ${{ inputs.checkov-version }}
+          # scan-fix(scorecard:PinnedDependenciesID): hash-verified wheel download before install
+          CHECKOV_VERSION: "3.2.0"
+          CHECKOV_SHA256: "2719334876d0ee6a8ebe8d15ff393cbb4c13dcfe81e3cb9348ef2c1ed8372c6e"
         run: |
           set -euo pipefail
-          pip install --only-binary=:all: "checkov==${CHECKOV_VERSION}"
+          pip download --only-binary=:all: --no-deps \
+            "checkov==${CHECKOV_VERSION}" -d /tmp/checkov-wheel
+          echo "${CHECKOV_SHA256}  /tmp/checkov-wheel/checkov-${CHECKOV_VERSION}-py3-none-any.whl" \
+            | sha256sum -c
+          pip install --only-binary=:all: /tmp/checkov-wheel/checkov-${CHECKOV_VERSION}-py3-none-any.whl
 
       - name: Run Checkov (with soft-fail, with skip-check)
         if: ${{ inputs.soft-fail && inputs.skip-check != '' }}

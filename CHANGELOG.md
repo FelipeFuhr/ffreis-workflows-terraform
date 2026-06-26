@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.2...v1.1.3) (2026-06-22)
+
+
+### Bug Fixes
+
+* **ci:** restore uses: indentation + hash-verify checkov install ([#63](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/63)) ([dbf2c48](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/dbf2c48039866dbb054d9cdd691fbe270c1211c0))
+
 ## [1.1.2](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.1...v1.1.2) (2026-06-15)
 
 

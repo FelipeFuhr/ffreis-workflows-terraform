@@ -59,6 +59,9 @@ jobs:
           format: table
           output: trivy.txt
           hide-progress: true
+          # Fetch the public Trivy release anonymously: Aqua's organization
+          # IP allowlist rejects the default GitHub Actions token from this runner.
+          token-setup-trivy: ""
 
       - name: Publish Trivy findings to summary
         if: always()

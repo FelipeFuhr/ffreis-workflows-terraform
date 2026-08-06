@@ -44,6 +44,3 @@ jobs:
         with:
           working_directory: ${{ inputs.scan-path }}
           soft_fail: ${{ inputs.soft-fail }}
-          # Aqua's GitHub API organization rejects the Actions token from this
-          # runner IP. Public tfsec release assets do not require authentication.
-          github_token: ""

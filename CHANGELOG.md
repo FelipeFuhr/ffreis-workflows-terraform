@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.3...v1.2.0) (2026-08-07)
+
+
+### Features
+
+* add runner input for self-hosted homelab runner support ([#70](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/70)) ([68c5ff1](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/68c5ff13b0513ba65a30e7d2ce1f5657be4a91d7))
+* **semgrep:** replace Docker-container semgrep-action with native CLI ([#71](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/71)) ([09ef00a](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/09ef00a3b514be3d940846d6be555df3089d096c))
+* **sonar:** route private repos to self-hosted SonarQube, not SonarCloud ([#76](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/76)) ([0f23e19](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/0f23e19d57fe345f18d851b257c68865e63e04c4))
+
+
+### Bug Fixes
+
+* **ci:** bump tf-plan/apply/destroy/drift job timeout 15m -&gt; 30m ([#67](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/67)) ([10ace74](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/10ace74d3f11d34838d608b2c51d991a66ce21a7))
+* **ci:** repin ffreis-workflows-general calls to v1.9.0 + fix codeql permission drift ([#75](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/75)) ([a6ad264](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/a6ad264e0ec82a36f9f824233c4f7d614ec7de7c))
+* **terraform:** default tfsec soft-fail to true, make job non-blocking ([#78](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/78)) ([987f4e7](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/987f4e7cb0cf8b6caff4ec39edbf27a335542abb))
+* **terraform:** fetch Aqua scanner releases anonymously ([#77](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/77)) ([ab25a72](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/ab25a726079fad497ab331fa21bc23387d67292e))
+* **tf:** support -backend-config file for per-env state (tf-plan/apply/destroy/drift) ([#65](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/65)) ([6ff20d8](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/6ff20d842d6f22bf9e60eb7422b189e85c72bc66))
+
 ## [1.1.3](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.2...v1.1.3) (2026-06-22)
 
 

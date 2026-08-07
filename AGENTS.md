@@ -70,6 +70,18 @@ enumerate private stack names in PR descriptions). They pin to a full commit SHA
   workflows that post PR comments or upload SARIF.
 - `self-test.yml` dry-run jobs (drift, apply, destroy, cost) need `id-token: write`
   even in dry-run mode so the workflow wiring is validated.
+- **`tf-tfsec.yml` is non-blocking as of 2026-08-06.** `aquasecurity/tfsec-action`'s
+  own install step (`entrypoint.sh` → `install_release`) hits a 403 from an
+  Aqua-side org IP allow list for this workspace's runner IP — a network-level
+  block, not an auth issue (a `github_token` fix was already tried and
+  confirmed to be a no-op for this action specifically). The install failure
+  exits the script *before* `soft_fail` is ever read, so the `soft-fail`
+  input's default (now `true`) is paired with `continue-on-error: true` on the
+  "Run tfsec" step — the default alone cannot keep the job green. Revert both
+  once Aqua grants an IP allow-list exemption, or drop the job entirely if
+  tfsec is ever replaced by Trivy's overlapping config-scan coverage in
+  `tf-security.yml` (the enforced, blocking gate for Terraform misconfigs in
+  the meantime).
 
 ## Public repo — private-repo hygiene
 

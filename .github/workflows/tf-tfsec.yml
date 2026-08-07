@@ -8,9 +8,33 @@ on:
         type: string
         default: "."
       soft-fail:
-        description: "Exit 0 even when findings are present (useful during ramp-up)"
+        description: >-
+          Exit 0 even when findings are present. Defaults to `true` (unlike most
+          "should this block CI" flags in this library, which default to blocking)
+          because aquasecurity/tfsec-action's own install step is currently
+          network-blocked for this workspace — see the dated comment on the
+          default below and on the "Run tfsec" step. Pass `false` to opt back
+          into hard-fail-on-finding once that block is lifted, or for a caller
+          that wants tfsec enforced today regardless.
         type: boolean
-        default: false
+        # 2026-08-06: aquasecurity org enforces a GitHub API IP allow list that
+        # 403s tfsec-action's own install script (curl to
+        # api.github.com/repos/aquasecurity/tfsec/releases/latest) for this
+        # workspace's runner IP — confirmed via live consumer CI logs
+        # (curl: (22) ... "the `aquasecurity` organization has an IP allow list
+        # enabled, and your IP address is not permitted"). This is a
+        # network-level block, not an auth failure: a `github_token` input was
+        # already tried and confirmed to be a no-op for this specific error.
+        # Defaulting to `true` here stops tfsec from permanently hard-failing
+        # CI for every consumer of this reusable workflow (~90 repos) until
+        # either Aqua grants an IP allow-list exemption for this workspace, or
+        # a future deliberate PR drops tfsec in favor of Trivy's overlapping
+        # Terraform config-scan coverage, which already runs and is enforced
+        # (blocking) in tf-security.yml. See also the "Run tfsec" step below:
+        # the install failure happens before `soft_fail` is even read, so this
+        # default alone does not restore a green job — `continue-on-error` on
+        # that step is what actually does.
+        default: true
       run_on_draft:
         description: "Run even on draft PRs (default: skip on draft to save CI minutes)"
         required: false
@@ -41,6 +65,19 @@ jobs:
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@b466648d6e39e7c75324f25d83891162a721f2d6 # v1.0.4
+        # 2026-08-06: aquasecurity org enforces a GitHub API IP allow list that
+        # 403s this action's own install script for this workspace's runner IP
+        # (confirmed via live consumer CI logs — see soft-fail input comment
+        # above). Verified by reading entrypoint.sh at this pinned SHA: the
+        # install step (`install_release`, via `set -xe`) exits the whole
+        # script on that 403 *before* the `soft_fail`-gated tfsec invocation is
+        # ever reached, so `soft-fail: true` alone cannot keep this step green
+        # while the block is in effect. `continue-on-error` is what actually
+        # keeps this job from permanently blocking CI here; remove it once the
+        # install step can reach api.github.com again (Aqua allow-list
+        # exemption), or drop this job entirely if tfsec is later replaced by
+        # Trivy's config-scan coverage in tf-security.yml.
+        continue-on-error: true
         with:
           working_directory: ${{ inputs.scan-path }}
           soft_fail: ${{ inputs.soft-fail }}

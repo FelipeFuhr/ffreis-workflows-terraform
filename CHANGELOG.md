@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.2.0...v2.0.0) (2026-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **runner:** callers that rely on the implicit ubuntu-latest default now land on [self-hosted, local] instead.
+
+### Bug Fixes
+
+* **ci:** pin own internal CI to ubuntu-latest — public repo can't use self-hosted ([#82](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/82)) ([08cc9ec](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/08cc9ecef767337a8b91b61b915e89ffe140bd4e))
+* **ci:** remove redundant standalone scorecards.yml ([#81](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/81)) ([0034844](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/00348441dfc80a430c7acb8eb9cd071310769bee))
+* **runner:** default the runner input to self-hosted, not ubuntu-latest ([#79](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/79)) ([41bc4aa](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/41bc4aa85037b428c1848b1e81459a7d287b3271))
+
 ## [1.2.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.1.3...v1.2.0) (2026-08-07)
 
 

@@ -15,6 +15,8 @@ jobs:
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-semantic-pr.yml@82097e621b8f630f2be2f759025529f7f5442796 # v1.9.0
     with:
       require-scope: false
+      # public repo: self-hosted runners are structurally unavailable here
+      runner: '["ubuntu-latest"]'
 
   actionlint:
     permissions:
@@ -22,3 +24,5 @@ jobs:
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-actionlint.yml@82097e621b8f630f2be2f759025529f7f5442796 # v1.9.0
     with:
       working-directory: "."
+      # public repo: self-hosted runners are structurally unavailable here
+      runner: '["ubuntu-latest"]'

@@ -22,6 +22,8 @@ jobs:
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-scorecard.yml@82097e621b8f630f2be2f759025529f7f5442796 # v1.9.0
     with:
       upload-sarif: true
+      # public repo: self-hosted runners are structurally unavailable here
+      runner: '["ubuntu-latest"]'
 
   stale:
     if: vars.STALE_ENABLED == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
@@ -32,6 +34,8 @@ jobs:
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-stale.yml@82097e621b8f630f2be2f759025529f7f5442796 # v1.9.0
     with:
       only: "both"
+      # public repo: self-hosted runners are structurally unavailable here
+      runner: '["ubuntu-latest"]'
 
   release-please:
     if: vars.RELEASE_PLEASE_ENABLED != 'false' && github.event_name == 'push'
@@ -42,5 +46,7 @@ jobs:
     uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-release-please.yml@82097e621b8f630f2be2f759025529f7f5442796 # v1.9.0
     with:
       target-branch: "main"
+      # public repo: self-hosted runners are structurally unavailable here
+      runner: '["ubuntu-latest"]'
     secrets:
       RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}

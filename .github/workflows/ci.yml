@@ -21,6 +21,8 @@
       with:
         mode: defines
         enforce: true
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
 
     check-workflow-syntax:
       if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
@@ -35,6 +37,9 @@
       permissions:
         contents: read
       uses: FelipeFuhr/ffreis-workflows-general/.github/workflows/general-workflows-policy.yml@82097e621b8f630f2be2f759025529f7f5442796 # v1.9.0
+      with:
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     codeql-actions:
       permissions:
         contents: read
@@ -45,18 +50,24 @@
         languages: actions
         source-root: .
         upload-sarif: false
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     fmt:
       permissions:
         contents: read
       uses: ./.github/workflows/tf-fmt.yml
       with:
         working-directory: examples/hello
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     validate:
       permissions:
         contents: read
       uses: ./.github/workflows/tf-validate.yml
       with:
         chdir: examples/hello/stack
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     lint:
       permissions:
         contents: read
@@ -64,6 +75,8 @@
       with:
         lint-path: examples/hello
         tflint-config: examples/hello/.tflint.hcl
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     docs:
       permissions:
         contents: read
@@ -71,6 +84,8 @@
       with:
         working-directory: examples/hello
         output-file: README.md
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     security:
       permissions:
         contents: read
@@ -80,18 +95,24 @@
       with:
         scan-ref: examples/hello
         upload-sarif: false
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     tfsec:
       permissions:
         contents: read
       uses: ./.github/workflows/tf-tfsec.yml
       with:
         scan-path: examples/hello
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     checkov:
       permissions:
         contents: read
       uses: ./.github/workflows/tf-checkov.yml
       with:
         scan-directory: examples/hello
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     test-tidy:
       permissions:
         contents: read
@@ -99,12 +120,16 @@
       with:
         test-dir: examples/hello/test
         go-version: "1.25.8"
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     semgrep:
       permissions:
         contents: read
       uses: ./.github/workflows/tf-semgrep.yml
       with:
         working-directory: examples/hello
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     # code scanning false positive ignore: SonarQube Docs API Key
     # The following SHA reference is not a secret, but a workflow version pin for tf-sonar.yml reusable workflow.
     sonar:
@@ -114,6 +139,8 @@
       uses: ./.github/workflows/tf-sonar.yml
       with:
         working-directory: examples/hello
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
       secrets:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     plan-dry-run:
@@ -126,6 +153,8 @@
         environment: dev
         chdir: examples/hello/stack
         dry-run: true
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     drift-dry-run:
       permissions:
         contents: read
@@ -135,6 +164,8 @@
         environment: dev
         chdir: examples/hello/stack
         dry-run: true
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     apply-dry-run:
       permissions:
         contents: read
@@ -144,6 +175,8 @@
         environment: dev
         chdir: examples/hello/stack
         dry-run: true
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     destroy-dry-run:
       permissions:
         contents: read
@@ -153,6 +186,8 @@
         environment: dev
         chdir: examples/hello/stack
         dry-run: true
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'
     cost-dry-run:
       permissions:
         contents: read
@@ -162,3 +197,5 @@
       with:
         path: examples/hello/stack
         dry-run: true
+        # public repo: self-hosted runners are structurally unavailable here
+        runner: '["ubuntu-latest"]'

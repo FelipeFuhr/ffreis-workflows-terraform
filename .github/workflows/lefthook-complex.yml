@@ -27,3 +27,5 @@ jobs:
       install-govulncheck: false
       lefthook-bootstrap-command: "make lefthook-bootstrap"
       lefthook-bin: ".bin/lefthook"
+      # public repo: self-hosted runners are structurally unavailable here
+      runner: '["ubuntu-latest"]'

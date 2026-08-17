@@ -33,6 +33,16 @@
       steps:
         - name: Check workflow syntax
           run: echo "Workflow syntax is valid"
+    workflow-invariants:
+      if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+      timeout-minutes: 15
+      permissions:
+        contents: read
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+        - name: No empty token inputs in workflows
+          run: ./scripts/checks/check_action_token_inputs.sh
     general-workflows-policy:
       permissions:
         contents: read
@@ -95,6 +105,11 @@
       with:
         scan-ref: examples/hello
         upload-sarif: false
+        # Force the setup-trivy download path on every run. With caching on, a
+        # binary-cache HIT skips the install (and its actions/checkout) entirely,
+        # which is how a broken token stayed invisible for 11 days. Consumers
+        # keep the default (cache: true); this repo pays ~7s to keep the path tested.
+        cache: false
         # public repo: self-hosted runners are structurally unavailable here
         runner: '["ubuntu-latest"]'
     tfsec:

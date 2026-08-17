@@ -9,7 +9,7 @@ help: ## Show this help message
 ##@ Validation
 
 .PHONY: lint
-lint: ## Lint workflow YAML with actionlint + tflint on examples
+lint: workflow-invariants ## Lint workflow YAML with actionlint + tflint on examples
 	@command -v actionlint > /dev/null 2>&1 || { \
 		echo "actionlint not found. Install it from https://github.com/rhysd/actionlint"; \
 		exit 1; \
@@ -20,6 +20,10 @@ lint: ## Lint workflow YAML with actionlint + tflint on examples
 	else \
 		echo "tflint not found; skipping example lint"; \
 	fi
+
+.PHONY: workflow-invariants
+workflow-invariants: ## Assert no workflow passes an empty *token* input to an action
+	./scripts/checks/check_action_token_inputs.sh
 
 .PHONY: check
 check: ## Validate workflow YAML syntax with yq (requires yq on PATH)

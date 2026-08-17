@@ -30,6 +30,16 @@ on:
         required: false
         type: string
         default: '["self-hosted","local"]'
+      cache:
+        description: |
+          Cache the Trivy binary and check DB between runs. Consumers should
+          leave this true. This repo's own ci.yml / self-test.yml pass false so
+          that every run exercises the real setup-trivy download path: a cache
+          hit skips that path entirely, which is exactly how a broken install
+          stayed invisible here for 11 days (see AGENTS.md § "Trivy install token").
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   security:
@@ -66,10 +76,9 @@ jobs:
           #     github.com/zclconf/go-cty/cty.Value.AsString
           #   ...trivy/pkg/iac/scanners/terraform/executor/executor.go
           # exit code 2. It is a crash, not findings — the scan never completes,
-          # so the job fails while appearing to be a scanner. On
-          # ffreis-platform-shared-infra this went unnoticed on `main` from
-          # 2026-08-03 to 2026-08-17: two weeks of a security gate reporting
-          # nothing.
+          # so the job fails while appearing to be a scanner. On one private
+          # consumer stack this went unnoticed on `main` from 2026-08-03 to
+          # 2026-08-17: two weeks of a security gate reporting nothing.
           #
           # Bisected against that repo's stack: the trigger is a
           # `provider "aws" { default_tags { tags = module.tags.tags } }` block —
@@ -81,9 +90,18 @@ jobs:
           # Pinned rather than bumping the action SHA so the change is one
           # legible line and the action's own supply-chain pin is untouched.
           version: v0.71.0
-          # Fetch the public Trivy release anonymously: Aqua's organization
-          # IP allowlist rejects the default GitHub Actions token from this runner.
-          token-setup-trivy: ""
+          # scan-fix(actions/checkout:empty-token): deliberately NO
+          # `token-setup-trivy:` override here. The action defaults it to
+          # `${{ github.token }}` and forwards it to aquasecurity/setup-trivy,
+          # which uses it to check out the PUBLIC aquasecurity/trivy install
+          # script. A previous revision set it to "" to force an "anonymous"
+          # fetch — that is not a thing: actions/checkout treats an explicit ""
+          # as supplied-but-invalid and dies with
+          #     ##[error]Input required and not supplied: token
+          # The authenticated fetch is verified working on BOTH runner classes;
+          # evidence in AGENTS.md § "Trivy install token". Regression-guarded by
+          # scripts/checks/check_action_token_inputs.sh.
+          cache: ${{ inputs.cache }}
 
       - name: Publish Trivy findings to summary
         if: always()
@@ -118,7 +136,13 @@ jobs:
           # (skip-setup-trivy), so the two MUST agree; a mismatch would silently
           # scan with one version and report with another.
           version: v0.71.0
+          # skip-setup-trivy short-circuits the action's whole "Install Trivy"
+          # block (`if: inputs.skip-setup-trivy == 'false'`), so setup-trivy —
+          # and therefore any token handling — never runs for this step. That is
+          # why there is no `token-setup-trivy:` here either, and why removing
+          # skip-setup-trivy would drag this step back onto the token path.
           skip-setup-trivy: true
+          cache: ${{ inputs.cache }}
 
       - name: Validate SARIF output
         shell: bash

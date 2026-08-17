@@ -59,6 +59,28 @@ jobs:
           format: table
           output: trivy.txt
           hide-progress: true
+          # scan-fix(trivy:go-cty-panic): pin Trivy above the action's own default.
+          # aquasecurity/trivy-action@ed142fd defaults to `version: v0.70.0`, and
+          # 0.70.0 PANICS parsing terraform:
+          #     panic: value is null
+          #     github.com/zclconf/go-cty/cty.Value.AsString
+          #   ...trivy/pkg/iac/scanners/terraform/executor/executor.go
+          # exit code 2. It is a crash, not findings — the scan never completes,
+          # so the job fails while appearing to be a scanner. On
+          # ffreis-platform-shared-infra this went unnoticed on `main` from
+          # 2026-08-03 to 2026-08-17: two weeks of a security gate reporting
+          # nothing.
+          #
+          # Bisected against that repo's stack: the trigger is a
+          # `provider "aws" { default_tags { tags = module.tags.tags } }` block —
+          # i.e. the fleet-standard tagging pattern every infra repo here uses,
+          # so this is not one repo's quirk.
+          #   0.70.0 -> exit 2, panic
+          #   0.71.0 -> exit 0
+          #   0.74.0 -> exit 0
+          # Pinned rather than bumping the action SHA so the change is one
+          # legible line and the action's own supply-chain pin is untouched.
+          version: v0.71.0
           # Fetch the public Trivy release anonymously: Aqua's organization
           # IP allowlist rejects the default GitHub Actions token from this runner.
           token-setup-trivy: ""
@@ -91,6 +113,11 @@ jobs:
           output: trivy.sarif
           hide-progress: true
           limit-severities-for-sarif: true
+          # Same pin as the table step above — see its comment for the panic and
+          # the bisect. This step reuses the binary that step installed
+          # (skip-setup-trivy), so the two MUST agree; a mismatch would silently
+          # scan with one version and report with another.
+          version: v0.71.0
           skip-setup-trivy: true
 
       - name: Validate SARIF output

@@ -24,7 +24,7 @@ Replace `<sha>` with the latest commit SHA from the target workflow repository. 
 | Terraform Format Check | `tf-fmt.yml` | `terraform fmt -check -recursive` | `terraform-version`, `working-directory` |
 | Terraform Validate | `tf-validate.yml` | `terraform init -backend=false` + `terraform validate` | `terraform-version`, `chdir`, `validate-all-modules`, `modules-dir` |
 | Terraform Lint | `tf-lint.yml` | tflint with recursive scan | `tflint-version`, `lint-path`, `tflint-config` |
-| Terraform Security Scan | `tf-security.yml` | Trivy config scan | `scan-ref`, `severity`, `exit-code` |
+| Terraform Security Scan | `tf-security.yml` | Trivy config scan | `scan-ref`, `severity`, `exit-code`, `upload-sarif`, `cache` |
 | Terraform Plan | `tf-plan.yml` | Plan with AWS OIDC + PR comment | `environment` (required), `terraform-version`, `chdir`, `aws-region`, `plan-args` |
 | Terraform Apply | `tf-apply.yml` | Apply with AWS OIDC | `environment` (required), `terraform-version`, `chdir`, `aws-region`, `auto-approve` |
 | Terraform Destroy | `tf-destroy.yml` | Destroy with AWS OIDC (caller must gate via `workflow_dispatch`) | `environment` (required), `chdir`, `target` |

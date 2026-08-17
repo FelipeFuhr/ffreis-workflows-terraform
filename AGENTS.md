@@ -71,10 +71,14 @@ enumerate private stack names in PR descriptions). They pin to a full commit SHA
 - `self-test.yml` dry-run jobs (drift, apply, destroy, cost) need `id-token: write`
   even in dry-run mode so the workflow wiring is validated.
 - **`tf-tfsec.yml` is non-blocking as of 2026-08-06.** `aquasecurity/tfsec-action`'s
-  own install step (`entrypoint.sh` → `install_release`) hits a 403 from an
-  Aqua-side org IP allow list for this workspace's runner IP — a network-level
-  block, not an auth issue (a `github_token` fix was already tried and
-  confirmed to be a no-op for this action specifically). The install failure
+  own install step (`entrypoint.sh` → `install_release`) has hit a 403 when
+  fetching the release from this workspace's self-hosted runner IP. The
+  "Aqua-side org IP allow list" diagnosis recorded here is **unverified** — it was
+  never reproduced deliberately, and the same theory turned out to be wrong for
+  Trivy (see § "Trivy install token"); GitHub's own anonymous-API rate limit on a
+  shared egress IP fits the symptom at least as well. On a GitHub-hosted runner
+  the anonymous fetch succeeds (self-test, 2026-08-17). Re-diagnose before acting
+  on this. The install failure
   exits the script *before* `soft_fail` is ever read, so the `soft-fail`
   input's default (now `true`) is paired with `continue-on-error: true` on the
   "Run tfsec" step — the default alone cannot keep the job green. Revert both
@@ -82,6 +86,46 @@ enumerate private stack names in PR descriptions). They pin to a full commit SHA
   tfsec is ever replaced by Trivy's overlapping config-scan coverage in
   `tf-security.yml` (the enforced, blocking gate for Terraform misconfigs in
   the meantime).
+
+## Trivy install token (`tf-security.yml`) — settled 2026-08-17
+
+**Never set `token-setup-trivy` on `aquasecurity/trivy-action`.** Leave it unset
+so the action's own `default: ${{ github.token }}` applies.
+
+- The action forwards it **unconditionally** to `aquasecurity/setup-trivy` as
+  `token:`, which hands it to `actions/checkout` to fetch the *public*
+  `aquasecurity/trivy` install script.
+- An explicit `""` is **not** an anonymous fetch. `actions/checkout` treats an
+  explicitly-empty token as supplied-but-invalid and fails the step with
+  `##[error]Input required and not supplied: token`. Only *omitting* the input
+  yields the default.
+- **The authenticated fetch works.** Verified on both runner classes:
+  - GitHub-hosted — this repo's Self Test, 2026-08-01, cache MISS on
+    `trivy-binary-v0.70.0-Linux-X64`, `Checkout install script` → `outcome=success`.
+  - Self-hosted homelab — a private consumer, 2026-08-17T00:41Z on a
+    `["self-hosted","local"]` runner, cache MISS, `Syncing repository:
+    aquasecurity/trivy` → `outcome=success`, binary installed and cached.
+  Anonymous **and** token-authenticated reads of `aquasecurity/trivy` also both
+  return 200 from the homelab egress IP. There is no Aqua IP-allow-list block on
+  this path — an earlier comment here and in `tf-security.yml` claimed otherwise
+  and was wrong.
+
+**Why it hid for 11 days.** `setup-trivy` only reaches its `actions/checkout` on
+a binary-cache **MISS** (`trivy-binary-<version>-<os>-<arch>`). The bad `""` landed
+2026-08-06 while the `v0.70.0` cache kept hitting, so the step was skipped every
+run. Pinning `v0.71.0` changed the cache key → first real miss → instant failure.
+
+Two guards now exist; keep both:
+1. `scripts/checks/check_action_token_inputs.sh` (via `make lint`, and the
+   `workflow-invariants` job in `ci.yml` + `self-test.yml`) fails on any workflow
+   passing an empty `*token*` input to an action.
+2. `ci.yml` and `self-test.yml` call `tf-security.yml` with `cache: false`, so the
+   install path is exercised on **every** run instead of being masked by a cache hit.
+   Consumers keep the `cache: true` default.
+
+> The separate `tf-tfsec.yml` 403 note below is a **different action** with a
+> different install mechanism (its own `entrypoint.sh`, not `setup-trivy`). The
+> evidence above says nothing about it; do not generalize between the two.
 
 ## Public repo — private-repo hygiene
 

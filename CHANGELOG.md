@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.1](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v2.0.0...v2.0.1) (2026-08-17)
+
+
+### Bug Fixes
+
+* **tf-security:** drop empty token-setup-trivy, it breaks setup-trivy's checkout ([#85](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/85)) ([123606a](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/123606ac76dc5162e92b9ecba1171c33db2d9f89))
+* **tf-security:** pin Trivy to v0.71.0 — v0.70.0 panics on terraform ([#83](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/83)) ([c36be67](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/c36be67a7a4351aa1ccc3cae584eee174e5e9ec0))
+
 ## [2.0.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.2.0...v2.0.0) (2026-08-10)
 
 

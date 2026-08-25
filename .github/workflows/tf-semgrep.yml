@@ -11,6 +11,16 @@ on:
         description: "Semgrep config/ruleset to use (e.g. auto, p/terraform)"
         type: string
         default: "auto"
+      exclude-rules:
+        description: |
+          Space-separated Semgrep rule IDs to exclude, e.g.
+          "terraform.aws.security.aws-dynamodb-table-unencrypted.aws-dynamodb-table-unencrypted".
+          Intended for a systemic, DOCUMENTED policy exception, so a repo can record it
+          once at the caller instead of scattering inline `# nosemgrep` comments across
+          every resource. Leave empty to exclude nothing.
+        required: false
+        type: string
+        default: ""
       semgrep-version:
         description: "Semgrep version to install (pinned for reproducibility)"
         type: string
@@ -56,7 +66,17 @@ jobs:
       - name: Run Semgrep
         env:
           SEMGREP_CONFIG: ${{ inputs.config }}
+          SEMGREP_EXCLUDE_RULES: ${{ inputs.exclude-rules }}
         run: |
           set -euo pipefail
           export PATH="$HOME/.local/bin:$PATH"
-          semgrep ci --config "$SEMGREP_CONFIG"
+          exclude_args=()
+          # Deliberately unquoted: the input is a space-separated ID list.
+          for rule in $SEMGREP_EXCLUDE_RULES; do
+            exclude_args+=(--exclude-rule "$rule")
+          done
+          if [ "${#exclude_args[@]}" -gt 0 ]; then
+            echo "Excluding ${#exclude_args[@]} rule(s): $SEMGREP_EXCLUDE_RULES"
+          fi
+          # ${a[@]+"${a[@]}"} keeps an empty array safe under `set -u`.
+          semgrep ci --config "$SEMGREP_CONFIG" ${exclude_args[@]+"${exclude_args[@]}"}

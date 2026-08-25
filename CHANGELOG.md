@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v2.0.0...v2.1.0) (2026-08-25)
+
+
+### Features
+
+* **tf-semgrep:** add exclude-rules input ([#86](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/86)) ([4b7e119](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/4b7e11941ce1a01cd7de58c78678c6517e4665f2))
+
+
+### Bug Fixes
+
+* **tf-security:** drop empty token-setup-trivy, it breaks setup-trivy's checkout ([#85](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/85)) ([123606a](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/123606ac76dc5162e92b9ecba1171c33db2d9f89))
+* **tf-security:** pin Trivy to v0.71.0 — v0.70.0 panics on terraform ([#83](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/83)) ([c36be67](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/c36be67a7a4351aa1ccc3cae584eee174e5e9ec0))
+
 ## [2.0.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v1.2.0...v2.0.0) (2026-08-10)
 
 

@@ -36,6 +36,31 @@ Replace `<sha>` with the latest commit SHA from the target workflow repository. 
 
 ---
 
+## Composite Actions
+
+Unlike the workflows above, these are single steps meant to be dropped into a
+caller's own custom job — for a caller that doesn't fully delegate its
+plan/apply job to this repo's `tf-plan.yml`/`tf-apply.yml`.
+
+| Action | Path | Purpose | Key Inputs |
+|---|---|---|---|
+| Setup platform-bootstrap | `.github/actions/setup-platform-bootstrap` | Clones the public `platform-bootstrap` Go CLI at a pinned SHA and builds it onto `PATH` — its `go.mod` module path doesn't match its actual repo location, so plain `go install` fails; several private fleet consumers need it in their own plan/apply jobs | `ref` (pinned SHA, defaults to a resolved commit — bump explicitly), `go-version` (defaults to reading the built repo's own `go.mod`), `install-dir` |
+
+```yaml
+jobs:
+  plan:
+    runs-on: [self-hosted, local]
+    steps:
+      - uses: actions/checkout@<sha> # v4
+      - uses: FelipeFuhr/ffreis-workflows-terraform/.github/actions/setup-platform-bootstrap@<sha>
+        with:
+          ref: <pinned commit SHA of the platform-bootstrap repo>
+      - run: platform-bootstrap fetch --org <org>
+      - run: terraform plan
+```
+
+---
+
 ## Usage Examples
 
 ### tf-fmt.yml

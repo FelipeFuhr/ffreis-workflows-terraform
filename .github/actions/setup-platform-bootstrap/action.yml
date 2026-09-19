@@ -1,0 +1,129 @@
+# Builds and installs the `platform-bootstrap` CLI onto the runner's PATH.
+#
+# Why this exists
+# ----------------
+# Several Terraform-stack repos in this fleet call `platform-bootstrap` from
+# their plan/apply jobs to fetch platform config before Terraform runs. The
+# CLI is built from a public repo (github.com/FelipeFuhr/ffreis-platform-bootstrap,
+# entrypoint ./cmd/platform-bootstrap) — but that repo's go.mod declares its
+# module path as `github.com/ffreis/platform-bootstrap`, one segment off from
+# where the repo actually lives. That mismatch makes the normal
+# `go install <import-path>@<ref>` one-liner fail outright with:
+#
+#     go: github.com/ffreis/platform-bootstrap@<ref>: module declares its
+#     path as: github.com/ffreis/platform-bootstrap
+#             but was required as: github.com/FelipeFuhr/ffreis-platform-bootstrap
+#
+# The reliable install path is instead: clone the repo at a pinned ref, then
+# `go build ./cmd/platform-bootstrap` from inside that checkout. This action
+# does exactly that so no consuming workflow has to carry its own copy of the
+# workaround.
+#
+# Per this workspace's "add capability upstream, then import it pinned"
+# convention, this lives here (the shared Terraform workflow library) rather
+# than inlined into any one consumer's workflow, since roughly a dozen infra
+# repos in the fleet need it.
+#
+# Usage (from a calling job's own custom plan/apply step, not a `uses:` of a
+# whole reusable workflow):
+#
+#   - uses: FelipeFuhr/ffreis-workflows-terraform/.github/actions/setup-platform-bootstrap@<sha>
+#     with:
+#       ref: <full commit SHA of ffreis-platform-bootstrap to build>
+#   - run: platform-bootstrap fetch --org <org>
+#
+# Note for anyone smoke-testing this in their own CI without AWS credentials:
+# platform-bootstrap resolves config and verifies AWS credentials in a
+# PersistentPreRunE that runs before every subcommand, `version` included —
+# `--help` is the only invocation cobra short-circuits before that chain.
+
+name: Setup platform-bootstrap
+description: >-
+  Clones FelipeFuhr/ffreis-platform-bootstrap at a pinned ref, builds
+  cmd/platform-bootstrap with `go build` (go.mod's module-path mismatch
+  makes `go install` fail), and adds the resulting binary to PATH.
+
+inputs:
+  ref:
+    description: >-
+      Full commit SHA of FelipeFuhr/ffreis-platform-bootstrap to build.
+      Must be a full 40-character SHA — never a floating ref such as `main`.
+      Defaults to the `main` branch tip as of the time this action was
+      authored; bump it explicitly (Renovate or manually, the same way this
+      repo's other pinned SHAs are kept current) rather than relying on the
+      default staying fresh.
+    required: false
+    default: "de75469b3aefdc995ad3ae35e09e0c8294706d2e" # main @ 2026-09-18
+  go-version:
+    description: >-
+      Go toolchain version to install. Leave empty (default) to read the
+      version pinned in the checked-out repo's own go.mod instead of
+      duplicating it here.
+    required: false
+    default: ""
+  install-dir:
+    description: >-
+      Directory to build the binary into and prepend to PATH. Leave empty
+      (default) to use a scratch directory under $RUNNER_TEMP — safe on both
+      GitHub-hosted and self-hosted runners without requiring elevated
+      permissions to write into a shared location such as /usr/local/bin.
+    required: false
+    default: ""
+
+outputs:
+  binary-path:
+    description: Absolute path to the built platform-bootstrap binary.
+    value: ${{ steps.build.outputs.binary-path }}
+  go-version:
+    description: The Go toolchain version that was actually installed and used to build.
+    value: ${{ steps.resolve-go.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout ffreis-platform-bootstrap
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+      with:
+        repository: FelipeFuhr/ffreis-platform-bootstrap
+        ref: ${{ inputs.ref }}
+        path: .platform-bootstrap-src
+
+    - name: Resolve Go version
+      id: resolve-go
+      shell: bash
+      env:
+        GO_VERSION_INPUT: ${{ inputs.go-version }}
+      run: |
+        set -euo pipefail
+        if [[ -n "${GO_VERSION_INPUT}" ]]; then
+          version="${GO_VERSION_INPUT}"
+        else
+          version="$(grep -m1 '^go ' .platform-bootstrap-src/go.mod | awk '{print $2}')"
+        fi
+        if [[ -z "${version}" ]]; then
+          echo "::error::could not resolve a Go version from go-version input or go.mod" >&2
+          exit 1
+        fi
+        echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+    - name: Set up Go
+      uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+      with:
+        go-version: ${{ steps.resolve-go.outputs.version }}
+        cache-dependency-path: .platform-bootstrap-src/go.sum
+
+    - name: Build platform-bootstrap
+      id: build
+      shell: bash
+      env:
+        INSTALL_DIR_INPUT: ${{ inputs.install-dir }}
+      run: |
+        set -euo pipefail
+        install_dir="${INSTALL_DIR_INPUT}"
+        if [[ -z "${install_dir}" ]]; then
+          install_dir="${RUNNER_TEMP}/platform-bootstrap-bin"
+        fi
+        mkdir -p "${install_dir}"
+        (cd .platform-bootstrap-src && go build -o "${install_dir}/platform-bootstrap" ./cmd/platform-bootstrap)
+        echo "${install_dir}" >> "$GITHUB_PATH"
+        echo "binary-path=${install_dir}/platform-bootstrap" >> "$GITHUB_OUTPUT"

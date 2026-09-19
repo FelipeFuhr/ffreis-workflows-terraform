@@ -33,8 +33,31 @@ for Terraform. Covers fmt, validate, tflint, Trivy, Checkov, plan/apply/destroy
   tf-*.yml        ← reusable library
   devops-*.yml    ← repo-maintenance
   ci.yml, release.yml
+.github/actions/  ← composite actions (single steps, not `workflow_call`)
 examples/hello/   ← minimal Terraform config
 ```
+
+## Composite actions vs. reusable workflows
+
+- `.github/actions/*/action.yml` holds single-step composites for callers
+  that don't delegate a whole job to this repo's `tf-*.yml` — e.g. a caller
+  with its own custom plan/apply job that just needs one extra setup step.
+  Reusable workflows (`workflow_call`) stay the default for anything that
+  wants a full job; reach for a composite action only when the caller
+  structurally can't use a `uses:` job.
+- `setup-platform-bootstrap` builds the `platform-bootstrap` Go CLI (public
+  repo, entrypoint `cmd/platform-bootstrap/main.go`) from source at a pinned
+  commit SHA. That repo's `go.mod` declares a module path one path segment
+  off from where the repo actually lives, so `go install <path>@<ref>` fails
+  outright with a "module declares its path as X but was required as Y"
+  error — clone-then-`go build` is the only working install method. Roughly
+  a dozen infra repos in the fleet need this CLI in their own plan/apply
+  jobs, hence it living here rather than inlined into any one of them.
+- `platform-bootstrap` resolves config and verifies AWS credentials in a
+  `PersistentPreRunE` that runs before **every** subcommand, `version`
+  included — `--help` is the only invocation cobra short-circuits before
+  that chain, so it's the one command safe to smoke-test without AWS
+  credentials (used by `platform-bootstrap-selftest` in `self-test.yml`).
 
 ## Build/test
 

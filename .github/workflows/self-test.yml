@@ -54,6 +54,31 @@ jobs:
       - name: No empty token inputs in workflows
         run: ./scripts/checks/check_action_token_inputs.sh
 
+  platform-bootstrap-selftest:
+    timeout-minutes: 15
+    name: setup-platform-bootstrap (clone + build + smoke test)
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
+
+      - name: Build platform-bootstrap
+        uses: ./.github/actions/setup-platform-bootstrap
+
+      - name: Verify platform-bootstrap runs
+        # Not `version`: platform-bootstrap's PersistentPreRunE resolves
+        # config and verifies AWS credentials for every subcommand, `version`
+        # included. `--help` is the only invocation cobra short-circuits
+        # before that chain, so it is the one command safe to run without
+        # AWS credentials in CI.
+        run: platform-bootstrap --help
+
   fmt:
     permissions:
       contents: read

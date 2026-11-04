@@ -183,6 +183,14 @@ jobs:
       runner: '["ubuntu-latest"]'
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # Passed even though this repo is PUBLIC and therefore never reaches the
+      # self-hosted server, because what this exercises is the CALLER
+      # CONTRACT, not the scan: passing a secret the callee does not declare
+      # is a silent `startup_failure` with zero jobs created, so a typo in
+      # tf-sonar.yml's `SONARQUBE_LOCAL_TOKEN:` id fails here loudly instead
+      # of on the first private consumer. Resolves to empty when the secret
+      # is unset, which is exactly the optional path.
+      SONARQUBE_LOCAL_TOKEN: ${{ secrets.SONARQUBE_LOCAL_TOKEN }}
 
   plan-dry-run:
     permissions:

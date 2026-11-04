@@ -29,6 +29,17 @@ on:
     secrets:
       SONAR_TOKEN:
         required: true
+      SONARQUBE_LOCAL_TOKEN:
+        description: >-
+          Token for the FLEET'S SELF-HOSTED SonarQube. Private repos route
+          there, not to SonarCloud, and it is a different server with its own
+          user database — presenting the SonarCloud SONAR_TOKEN gets a 401
+          every time, which reads as a bad secret rather than as the wrong
+          server. Optional so this stays backward-compatible; the composite
+          warns when it falls back. SCREAMING_SNAKE_CASE is required, not
+          style — a hyphenated workflow_call secret id is a silent
+          startup_failure.
+        required: false
       CI_NOTIFY_ROLE_ARN:
         description: "IAM role ARN for the fleet's monitor-Lambda CI-fallback notification (optional; omit to disable notification entirely — no AWS call is made)."
         required: false
@@ -104,12 +115,13 @@ jobs:
 
       - name: Sonar scan (with local fallback)
         id: sonar
-        uses: FelipeFuhr/ffreis-workflows-general/.github/actions/sonar-scan-with-fallback@c0ba1ad0332f094ce1c8ab57c954cf581a51ddf1
+        uses: FelipeFuhr/ffreis-workflows-general/.github/actions/sonar-scan-with-fallback@b341512d0417811c3263d1b92db8a9a8e0985bcb
         with:
           project-base-dir: ${{ inputs.working-directory }}
           project-key: ${{ steps.vars.outputs.project_key }}
           organization: ${{ steps.vars.outputs.organization }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
+          local-sonar-token: ${{ secrets.SONARQUBE_LOCAL_TOKEN }}
           extra-sonar-args: >
             -Dsonar.sources=.
           notify-role-to-assume: ${{ secrets.CI_NOTIFY_ROLE_ARN }}

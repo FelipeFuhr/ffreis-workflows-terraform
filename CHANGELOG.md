@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v2.2.0...v2.3.0) (2026-11-04)
+
+
+### Features
+
+* **sonar:** route through the shared local-fallback composite ([8325c23](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/8325c2339c8279dd058f5351943b5907f80a93de))
+
+
+### Bug Fixes
+
+* **make:** move pin comments off the assignment line ([#94](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/94)) ([cdd33de](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/cdd33de07dd20b5db7ba86eb1abb81a208824209))
+* **sonar:** pass the self-hosted server's own token through tf-sonar ([#95](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/95)) ([0abf50d](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/0abf50dd570dab45272a12192edac47cc4d49007))
+* **sonar:** wire run_on_draft into the job gate ([d0fbd24](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/d0fbd2430fa770bb9cefe8c60ead9f85d3c7c56f))
+
 ## [2.2.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v2.1.0...v2.2.0) (2026-09-19)
 
 

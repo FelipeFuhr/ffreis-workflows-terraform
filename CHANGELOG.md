@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v2.3.0...v2.3.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* **checkov:** pin Python 3.12 — ubuntu-latest drifted to 3.13 and broke pip ([#96](https://github.com/FelipeFuhr/ffreis-workflows-terraform/issues/96)) ([6da4f93](https://github.com/FelipeFuhr/ffreis-workflows-terraform/commit/6da4f93227994f3fc06ef4cec7b56a99908ca6b2))
+
 ## [2.3.0](https://github.com/FelipeFuhr/ffreis-workflows-terraform/compare/v2.2.0...v2.3.0) (2026-11-04)
 
 

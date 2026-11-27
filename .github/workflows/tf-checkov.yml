@@ -47,6 +47,30 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4
 
+      # Pin the interpreter. Without this the job inherits the runner's default
+      # Python, which drifted to 3.13 on ubuntu-latest and broke the install
+      # outright:
+      #
+      #   ERROR: Could not find a version that satisfies the requirement
+      #          rustworkx<0.14.0,>=0.13.0 (from checkov)
+      #          (from versions: 0.15.0, 0.15.1, 0.16.0, ...)
+      #
+      # checkov 3.2.0 pins rustworkx<0.14.0, and rustworkx 0.13.x publishes
+      # wheels for cp37-cp312 only — there is no cp313 wheel, and
+      # --only-binary=:all: (correctly) refuses to build from source. So every
+      # consumer running on ubuntu-latest fails at pip, before scanning
+      # anything, and reports zero findings while looking like a policy failure.
+      #
+      # Pinning Python rather than bumping CHECKOV_VERSION is deliberate:
+      # 3.2.0 -> 3.2.533 (the oldest release that relaxes the constraint to
+      # rustworkx<1.0.0) is 533 patch releases of new and changed checks, which
+      # would turn currently-green consumers red for reasons unrelated to this
+      # breakage. This keeps the scan identical and only fixes the install.
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
       - name: Install Checkov
         env:
           # scan-fix(scorecard:PinnedDependenciesID): hash-verified wheel download before install
